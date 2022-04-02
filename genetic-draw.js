@@ -36,8 +36,9 @@ let WIDTH = canvas.width;
 let HEIGHT = canvas.height;
 
 let ctx = canvas.getContext('2d');
-let intStack = [];
 
+let intStack = [];
+let codeStack = [];
 
 let bumper = (x) => {
   if (x >= WIDTH) {
@@ -103,7 +104,12 @@ let operations = {
   },
   "turn": pop1Int(a => {
     theta += a;
-  })
+  }),
+  "exec": () => {
+    for( let step = codeStack.shift(); step != undefined ; step = codeStack.shift()) {
+      executeStep(step);
+    }
+  }
 };
 
 let program = `
@@ -111,23 +117,42 @@ originX originY move
 32 forward
 45 turn
 100 forward
+exec
 `;
 
+let EXEC_LIMIT = 1000;
+let execStepCount = 0;
+function executeStep(step) {
+  execStepCount++ ;
+  if (execStepCount > EXEC_LIMIT) {
+    throw new Error("exceeded execution limit");
+  }
+  if (step.trim() == '') {
+    return;
+  };
+  let operation = operations[step];
+  let theInt;
+  if (operation) {
+    console.log(step);
+    operation();
+  } else if (theInt = parseInt(step)) {
+    console.log(theInt);
+    intStack.push(theInt);
+  } else {
+    console.error('invalid operation = ' + step);
+  }
+}
 function runProgram(program) {
   let lines = program.split('\n');
   for (let line of lines) {
-    for (let operationString of line.split(' ')) {
-      if (operationString.trim() == '') continue;
-      let operation = operations[operationString];
-      let theInt;
-      if (operation) {
-        console.log(operationString);
-        operation();
-      } else if (theInt = parseInt(operationString)) {
-        console.log(theInt);
-        intStack.push(theInt);
-      } else {
-        console.error('invalid operation = ' + operationString);
+    for (let step of line.split(' ')) {
+      step = step.trim();
+      if (step == ""){
+        continue;
+      } else if (step == "exec") {
+        operations[step]();
+      } else  {
+        codeStack.push(step);
       }
     }
   }
