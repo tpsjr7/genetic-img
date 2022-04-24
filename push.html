@@ -1,5 +1,26 @@
 <html>
 <body>
+<canvas width="300" height="300" style="border: solid black 1px;"></canvas>
+<br>
+<textarea id="program" cols="40" rows="10">
+(
+    0.0 0.0 FLOAT.CV_MOVE_TO
+    50.0 FLOAT.CV_FORWARD
+    90.0 FLOAT.CV_TURN
+    50.0 FLOAT.CV_FORWARD
+)
+</textarea>
+</br>
+<input type="button" value="Run" onclick="run();"></input>
+<div id="output"></div>
 <script src="push.js"></script>
+<script>
+    function run() {
+        let prog = document.getElementById('program');
+        let results = pushRunString(prog.value);
+        document.getElementById('output').innerHTML=results;
+    }
+    run();
+</script>
 </body>
 </html>

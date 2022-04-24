@@ -105,20 +105,54 @@ let operations = {
   "turn": pop1Int(a => {
     theta += a;
   }),
+  "if": ()=>{
+    // when if
+    // increment stack debth
+    // keep executing until get to 'else'
+    // when get to 'else' skip until fi
+    // when get to fi, decrement stack state
+  },
   "exec": () => {
     for( let step = codeStack.shift(); step != undefined ; step = codeStack.shift()) {
       executeStep(step);
     }
+  },
+  "execTimes": () => {
+//    codeStack.pop
   }
 };
+
+http://faculty.hampshire.edu/lspector/push3-description.html
+
+let recursion = `
+
+`;
+
 
 let program = `
 originX originY move
 32 forward
 45 turn
 100 forward
-exec
+5 execTimes
 `;
+
+
+// when if -> execute
+let ifProgram = `
+1
+if
+  32 forward
+  if
+    47
+  else
+    34
+  fi
+else
+  45 turn
+fi
+`
+
 
 let EXEC_LIMIT = 1000;
 let execStepCount = 0;

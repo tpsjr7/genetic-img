@@ -37,7 +37,6 @@ Number.prototype.equals = function( inOther ) {
 }
 
 Array.prototype._isPushProgram = true;
-
 Array.prototype.toString = function() {
   var str = "";
 
@@ -109,6 +108,7 @@ function pushInstruction( inStack, inFunction ) {
 
   this.call = function( inInterpreter ) {
     this._function( inInterpreter, this._stack );
+    console.log(inInterpreter.toString());
   }
 }
 
@@ -648,6 +648,7 @@ function pushInterpreter( ) {
   this.intStack = [];
   this.boolStack = [];
   this.nameStack = [];
+  this.canvasStack = [];
 
   this._nameCounter = 0;
 
@@ -876,6 +877,52 @@ function pushInterpreter( ) {
 
   this[ 'INPUT' ] = float_input;
 
+  let Canvas = function(){
+    let _canvas = document.getElementsByTagName('canvas')[0];
+    let WIDTH = _canvas.width;
+    let HEIGHT = _canvas.height;
+    let ctx = _canvas.getContext('2d');
+    let currentX, currentY, theta = 0;
+    let _moveTo = function(x, y) {
+      currentY = y + HEIGHT / 2;
+      currentX = x + WIDTH / 2;
+    }
+    _moveTo(0,0);
+    this.moveTo = function(x, y) {
+      _moveTo(x, y);
+      ctx.moveTo(currentX, currentY);
+    }
+    this.forward = function(dist) {
+      let rads = Math.PI / 180 * theta;
+      let xNew = currentX + dist * Math.cos(rads);
+      let yNew = currentY + dist * Math.sin(rads);
+      currentX = xNew;
+      currentY = yNew;
+      ctx.lineTo(xNew, yNew);
+      ctx.stroke();
+    }
+    this.turn = function(degrees) {
+      theta += degrees;
+    }
+  }
+
+  let canvas = new Canvas();
+
+  this[ 'FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
+    if( inStack.length >= 2 ) {
+      canvas.moveTo(inStack.pop(), inStack.pop());
+    }
+  });
+  this[ 'FLOAT.CV_FORWARD']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
+    if( inStack.length >= 1 ) {
+      canvas.forward(inStack.pop());
+    }
+  });
+  this[ 'FLOAT.CV_TURN']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
+    if( inStack.length >= 1 ) {
+      canvas.turn(inStack.pop());
+    }
+  });
 }
 
 /**
