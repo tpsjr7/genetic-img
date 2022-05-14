@@ -1,5 +1,15 @@
 
 
+function makeRandomSeq(seq){
+  let count = 0;
+  return function() {
+    if (count >= seq.length){
+      throw "out of range";
+    }
+    return seq[count++];
+  };
+}
+
 function assertEquals(expected, actual, message) {
   if (expected != actual) {
     let mess = message ?  message + ', ' : '';
@@ -7,7 +17,25 @@ function assertEquals(expected, actual, message) {
     throw mess;
   }
 }
+function fail(mess) {
+  throw "Fail " + mess;
+}
 let tests = {
+  testMakeRanSeq() {
+    let rand = makeRandomSeq([4,3,7]);
+    assertEquals(4, rand());
+    assertEquals(3, rand());
+    assertEquals(7, rand());
+
+    rand = makeRandomSeq([2, 1]);
+    assertEquals(2, rand());
+    assertEquals(1, rand());
+    try {
+      assertEquals(99, rand());
+      fail("should have thrown")
+    } catch (e) { }
+
+  },
   testAdd() {
     let inProgram = '(5 7 INTEGER.+)'
     let program = pushParseString( inProgram );
@@ -15,7 +43,6 @@ let tests = {
     let info = pushRunProgram( interpreter, program );
     assertEquals(interpreter.intStack[0], 12);
   },
-
   testCodeRand() {
     let interpreter = new pushInterpreter();
     interpreter.randInstructions = ['INTEGER.+', 'CODE.NOOP'];
@@ -35,7 +62,13 @@ let tests = {
 
     let item = interpreter.codeStack.pop();
     assertEquals('( INTEGER.+ CODE.NOOP CODE.NOOP INTEGER.+ )', item.toString());
+  },
+  testDecompose() {
+    // then return a list containing NUMBER
+    assertEquals('( 1 )', decompose(1, 3));
 
+    //MAX-PARTS is 1
+    assertEquals('( 10 )', decompose(10, 1));
   }
 };
 
