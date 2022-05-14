@@ -11,7 +11,10 @@ function makeRandomSeq(seq){
 }
 
 function assertEquals(expected, actual, message) {
-  if (expected != actual) {
+  if (typeof expected != typeof actual) {
+    throw 'Fail: types dont match';
+  }
+  if (expected !== actual) {
     let mess = message ?  message + ', ' : '';
     mess += 'Failed: Expected: ' + expected + ', Actual: ' + actual;
     throw mess;
@@ -64,11 +67,21 @@ let tests = {
     assertEquals('( INTEGER.+ CODE.NOOP CODE.NOOP INTEGER.+ )', item.toString());
   },
   testDecompose() {
+
     // then return a list containing NUMBER
-    assertEquals('( 1 )', decompose(1, 3));
+    assertEquals('( 1 )', decompose(1, 3, null).toString());
 
     //MAX-PARTS is 1
-    assertEquals('( 10 )', decompose(10, 1));
+    assertEquals('( 10 )', decompose(10, 1, null).toString());
+
+    let count=0;
+    let rand = function(max){
+      let vals = [0.3, 0.34, 0.56, 0.574, 0.2, 0.9];
+      let ret = Math.floor(vals[count++] * max);
+      // console.log('rand: ' + ret);
+      return ret;
+    };
+    assertEquals('( 3 3 2 1 1 )', decompose(10, 10, rand).toString());
   }
 };
 
