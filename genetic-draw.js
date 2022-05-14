@@ -122,7 +122,7 @@ let operations = {
   }
 };
 
-http://faculty.hampshire.edu/lspector/push3-description.html
+// http://faculty.hampshire.edu/lspector/push3-description.html
 
 let recursion = `
 
