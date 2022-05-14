@@ -161,7 +161,32 @@ function pushInstructionRandomName( inInterpreter, inStack ) {
   inStack.push( "n" + inInterpreter._nameCounter++ );
 }
 
+function pushInstructionRandomCode( inInterpreter, inStack ) {
+  if (inInterpreter.intStack.length == 0) {
+    return;
+  }
+  let maxPoints = inInterpreter.conf['MAX-POINTS-IN-RANDOM-EXPRESSIONS'];
+  if (!maxPoints) {
+    throw 'MAX-POINTS-IN-RANDOM-EXPRESSIONS  is not set';
+  }
+  let randInstructions = inInterpreter.randInstructions
+  if (!randInstructions) {
+    throw "randInstructions not set";
+  }
+  let maxSize = inInterpreter.intStack.pop() % maxPoints;
+  let len = inInterpreter.nextRandInt(maxSize)
+  let expression = '( ';
+  let nInstructions = randInstructions.length;
+  for (let i = 0 ; i < len ; i++) {
+    expression += randInstructions[inInterpreter.nextRandInt(nInstructions - 1)] + ' ';
+  }
+  expression += ')';
+  inInterpreter.codeStack.push(expression);
+  return;
+}
+
 function pushInstructionRandomBoundName( inInterpreter, inStack ) {
+  throw "not implemented";
 }
 
 
@@ -650,6 +675,7 @@ function pushInterpreter( ) {
 
   this._nameCounter = 0;
 
+  this.conf = {};
 
 
   this.intStack.push = function( inValue ) {
@@ -706,6 +732,10 @@ function pushInterpreter( ) {
       })(theStack, theStack.push, this);
     }
   }
+
+  this.nextRandInt = function(maxVal) {
+    throw "not implemented";
+  };
 
   this.clearStacks = function() {
     this.floatStack.splice( 0, this.floatStack.length );
@@ -901,6 +931,7 @@ function pushInterpreter( ) {
   this[ 'INTEGER.RAND' ] = new pushInstruction( this.intStack, pushInstructionRandomNumber );
   this[ 'FLOAT.RAND' ] = new pushInstruction( this.floatStack, pushInstructionRandomNumber );
   this[ 'NAME.RAND' ] = new pushInstruction( this.nameStack, pushInstructionRandomName );
+  this[ 'CODE.RAND' ] = new pushInstruction( this.codeStack, pushInstructionRandomCode );
 
   this[ 'TRUE' ] = new pushDefine( this.boolStack, true );
   this[ 'FALSE' ] = new pushDefine( this.boolStack, false );
