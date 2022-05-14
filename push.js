@@ -108,7 +108,6 @@ function pushInstruction( inStack, inFunction ) {
 
   this.call = function( inInterpreter ) {
     this._function( inInterpreter, this._stack );
-    console.log(inInterpreter.toString());
   }
 }
 
@@ -648,9 +647,10 @@ function pushInterpreter( ) {
   this.intStack = [];
   this.boolStack = [];
   this.nameStack = [];
-  this.canvasStack = [];
 
   this._nameCounter = 0;
+
+
 
   this.intStack.push = function( inValue ) {
       this.parentpush = Array.prototype.push;
@@ -678,6 +678,35 @@ function pushInterpreter( ) {
       this.parentpush( inValue );
   };
 
+  let stackNames = ['float', 'exec', 'code', 'int', 'bool', 'name'];
+
+
+  if (true) {
+    let theThis = this;
+    for (let stackName of stackNames) {
+      let theStack = theThis[stackName+'Stack'];
+      theStack.pop = (function(me, origFunc, pushInt){
+        return function(){
+          let retval = origFunc.call(me);
+          if (logState) {
+            logState(pushInt, "pop " + stackName + ' = ' + retval);
+          }
+          return retval;
+        };
+      })(theStack, theStack.pop, this);
+
+      theStack.push = (function(me, origFunc, pushInt){
+        return function(val){
+          let retval = origFunc.call(me, val);
+          if (logState) {
+            logState(pushInt, "push " + stackName + ' = ' + val );
+          }
+          return retval;
+        };
+      })(theStack, theStack.push, this);
+    }
+  }
+
   this.clearStacks = function() {
     this.floatStack.splice( 0, this.floatStack.length );
     this.execStack.splice( 0, this.execStack.length );
@@ -688,12 +717,13 @@ function pushInterpreter( ) {
   }
 
   this.toString = function() {
-    var text = "Float stack contents: " + this.floatStack + "<br>";
-    text += "Int stack contents: " + this.intStack + "<br>";
-    text += "Bool stack contents: " + this.boolStack + "<br>";
-    text += "Name stack contents: " + this.nameStack + "<br>";
-    text += "Code stack contents: " + this.codeStack + "<br>";
-    text += "Exec stack contents: " + this.execStack + "<br>";
+    var text = "";
+    for (let stack of ['float', 'int', 'bool', 'name', 'code', 'exec']) {
+      let theStack = this[stack+'Stack'];
+      if (theStack.length > 0) {
+        text += stack + ': ' + theStack + "\n";
+      }
+    }
     return text;
   }
 
@@ -941,6 +971,7 @@ function pushRunProgram( inInterpreter, inProgramArray ) {
   inInterpreter.execStack.push( inProgramArray );
 
   while( inInterpreter.execStack.length > 0 ) {
+
     atom = inInterpreter.execStack.pop();
 
     if( isPushProgram( atom ) ) {
@@ -955,9 +986,14 @@ function pushRunProgram( inInterpreter, inProgramArray ) {
       if( func == null ) {
         inInterpreter.nameStack.push( atom );
       } else if( isPushInstruction( func ) || isPushDefine( func ) ) {
+
+        logState && logState(inInterpreter, 'before run ' + atom);
         func.call( inInterpreter );
+        logState && logState(inInterpreter, 'after run ' + atom);
       } else {
+        logState && logState(inInterpreter, 'before run ' + atom);
         func( inInterpreter );
+        logState && logState(inInterpreter, 'after run ' + atom);
       }
     }
 
@@ -969,7 +1005,7 @@ function pushRunProgram( inInterpreter, inProgramArray ) {
       return -1;
     }
   }
-
+  
   return 0;
 }
 

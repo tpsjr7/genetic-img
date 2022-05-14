@@ -4,18 +4,32 @@
 <br>
 <textarea id="program" cols="40" rows="10">
 (
-    0.0 0.0 FLOAT.CV_MOVE_TO
-    50.0 FLOAT.CV_FORWARD
-    90.0 FLOAT.CV_TURN
-    50.0 FLOAT.CV_FORWARD
+1 2 INTEGER.+
 )
+
 </textarea>
 </br>
 <input type="button" value="Run" onclick="run();"></input>
-<div id="output"></div>
+<textarea id="output" cols=70 rows=20 style="position: absolute; top: 0; left: 200;"></textarea>
 <script src="push.js"></script>
 <script>
+    let logout = '';
+    function logState(inInterpreter, message) {
+        if(!inInterpreter.clearStacks) {
+          throw "oops";
+        }
+        let op = document.getElementById('output');
+        logout += '--------\n';
+        if (message) {
+          logout += message + '\n';
+        }
+        logout += inInterpreter.toString() +'\n';
+
+        op.value = logout;
+    }
     function run() {
+        logout = '';
+        document.getElementById('output').value='';
         let prog = document.getElementById('program');
         let results = pushRunString(prog.value);
         document.getElementById('output').innerHTML=results;
