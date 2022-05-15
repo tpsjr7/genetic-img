@@ -14,8 +14,36 @@ class CanvasManager {
     let col = index % cols;
     let row = Math.floor(index / cols);
     return {
+      width: width,
+      height: height,
       x: col * width,
       y: row * height
     };
+  }
+
+  createCanvases() {
+    if (this.canvases.length != 0) {
+      throw new Error('already created');
+    }
+
+    for (let i = 0 ; i < this.nCanvases; i++) {
+      let canvas = this.window.document.createElement('canvas');
+      this.canvases.push(canvas);
+      this.window.document.body.appendChild(canvas);
+    }
+    this.positionCanvases();
+  }
+
+  positionCanvases() {
+    for (let i = 0 ; i < this.canvases.length; i++) {
+      let pos = this.calcPositionForCanvas(i);
+      let canvas = this.canvases[i];
+      canvas.style.border = 'solid 1px black';
+      canvas.style.position = 'absolute';
+      canvas.style.left = pos.x + 'px';
+      canvas.style.top = pos.y + 'px';
+      canvas.style.width = pos.width + 'px';
+      canvas.style.height = pos.height + 'px';
+    }
   }
 }
