@@ -173,7 +173,7 @@ function pushInstructionRandomCode( inInterpreter, inStack ) {
   if (!randInstructions) {
     throw "randInstructions not set";
   }
-  let maxSize = inInterpreter.intStack.pop() % maxPoints;
+  let maxSize = Math.min(Math.abs(inInterpreter.intStack.pop()), maxPoints);
   let len = inInterpreter.nextRandInt(maxSize)
 
   let code = randomCode(maxSize, inInterpreter, Math.random);
