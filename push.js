@@ -209,13 +209,13 @@ function pushInstructionNot( inInterpreter, inStack ) {
 }
 
 function pushInstructionFromInteger( inInterpreter, inStack ) {
-  if( inStack.length > 0 ) {
+  if( inInterpreter.intStack.length > 0 ) {
     inStack.push( inInterpreter.intStack.pop() );
   }
 }
 
 function pushInstructionFromFloat( inInterpreter, inStack ) {
-  if( inStack.length > 0 ) {
+  if( inInterpreter.floatStack.length > 0 ) {
     inStack.push( inInterpreter.floatStack.pop() );
   }
 }

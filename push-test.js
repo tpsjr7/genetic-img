@@ -180,7 +180,7 @@ let tests = {
     assertEquals(1, pi.codeStack.length);
     assertTrue(pi.codeStack[0].length >= 1);
   },
-  testBug() {
+  testBug1() {
     //int: ( 1 )
     // bool: ( false false )
     //exec: ( CODE.POP CODE.POP BOOLEAN.FLUSH CODE.STACKDEPTH INTEGER.FROMBOOLEAN )
@@ -191,9 +191,15 @@ let tests = {
 
     let program = pushParseString('( CODE.POP CODE.POP BOOLEAN.FLUSH CODE.STACKDEPTH INTEGER.FROMBOOLEAN )' );
     pushRunProgram(pi, program);
+  },
+  testBug2() {
+    let pi = new pushInterpreter();
+    let program = pushParseString('(0.9 FLOAT.FROMINTEGER)' );
+    pushRunProgram(pi, program);
+    assertEquals(1, pi.floatStack.length);
   }
 };
-
+//this[ 'FLOAT.FROMINTEGER' ] = new pushInstruction( this.floatStack, pushInstructionFromInteger );
 
 function runTests() {
   try {
@@ -203,7 +209,7 @@ function runTests() {
     }
     document.write('<h1 style="color: green">Pass</h1>');
   } catch (e) {
-    log.warn(e);
+    console.warn(e);
     document.write('<h1 style="color: red">Fail</h1>');
   }
 }
