@@ -791,7 +791,7 @@ function pushInterpreter( ) {
   this[ 'BOOLEAN.FROMINTEGER' ] = new pushInstruction( this.boolStack, pushInstructionFromInteger );
 
   this[ 'FLOAT.FROMBOOLEAN' ] = new pushInstruction( this.floatStack, pushInstructionFromBoolean );
-  this[ 'INTEGER.FROMBOOLEAN' ] = new pushInstruction( this.integerStack, pushInstructionFromBoolean );
+  this[ 'INTEGER.FROMBOOLEAN' ] = new pushInstruction( this.intStack, pushInstructionFromBoolean );
 
   this[ 'FLOAT.COS' ] = new pushInstruction( this.floatStack, pushInstructionCos );
   this[ 'FLOAT.SIN' ] = new pushInstruction( this.floatStack, pushInstructionSin );

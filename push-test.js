@@ -179,14 +179,31 @@ let tests = {
     // console.log(item.toString());
     assertEquals(1, pi.codeStack.length);
     assertTrue(pi.codeStack[0].length >= 1);
+  },
+  testBug() {
+    //int: ( 1 )
+    // bool: ( false false )
+    //exec: ( CODE.POP CODE.POP BOOLEAN.FLUSH CODE.STACKDEPTH INTEGER.FROMBOOLEAN )
+    let pi = new pushInterpreter();
+    pi.boolStack.push(false);
+    pi.boolStack.push(false);
+    pi.intStack.push(1);
+
+    let program = pushParseString('( CODE.POP CODE.POP BOOLEAN.FLUSH CODE.STACKDEPTH INTEGER.FROMBOOLEAN )' );
+    pushRunProgram(pi, program);
   }
 };
 
 
 function runTests() {
-  for (let test in tests) {
-    console.log('Running ' + test);
-    tests[test]();
+  try {
+    for (let test in tests) {
+      console.log('Running ' + test);
+      tests[test]();
+    }
+    document.write('<h1 style="color: green">Pass</h1>');
+  } catch (e) {
+    log.warn(e);
+    document.write('<h1 style="color: red">Fail</h1>');
   }
-  console.log('Pass');
 }
