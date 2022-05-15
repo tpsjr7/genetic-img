@@ -9,25 +9,52 @@ function makeRandomSeq(seq){
   };
 }
 
+function isEqual(obj1, obj2) {
+  let props1 = Object.getOwnPropertyNames(obj1);
+  let props2 = Object.getOwnPropertyNames(obj2);
+  if (props1.length !== props2.length) {
+    return false;
+  }
+  for (let i = 0; i < props1.length; i++) {
+    let val1 = obj1[props1[i]];
+    let val2 = obj2[props1[i]];
+    let isObjects = isObject(val1) && isObject(val2);
+    if (isObjects && !isEqual(val1, val2) || !isObjects && val1 !== val2) {
+      return false;
+    }
+  }
+
+  return true;
+}
+function isObject(object) {
+  return object != null && typeof object === 'object';
+}
+
 function assertEquals(expected, actual, message) {
-  if (typeof expected != typeof actual) {
-    throw `Fail: types dont match. Expected: ${expected} vs Actual: ${actual}`;
+  if (typeof expected !== typeof actual) {
+    throw new Error(`Fail: types dont match. Expected: ${expected} vs Actual: ${actual}`);
   }
   if (Array.isArray(expected) && Array.isArray(actual)) {
-    if (expected.length != actual.length || expected.toString() !== actual.toString()) {
-      throw `Failed. Excepted: ${expected}, Actual: ${actual}`;
+    if (expected.length !== actual.length || expected.toString() !== actual.toString()) {
+      throw new Error(`Failed. Excepted: ${expected}, Actual: ${actual}`);
     }
     return;
   }
+
+  if (isEqual(expected, actual)) {
+    return;
+  }
+
   if (expected !== actual) {
     let mess = message ?  message + ', ' : '';
-    mess += 'Failed: Expected: ' + expected + ', Actual: ' + actual;
-    throw mess;
+    mess += 'Failed: Expected: '
+        + JSON.stringify(expected) + ', Actual: ' + JSON.stringify(actual);
+    throw new Error(mess);
   }
 }
 function assertTrue(expression) {
   if (!expression) {
-    throw "not true";
+    throw new Error("not true");
   }
 }
 function assertThrows(code) {
@@ -37,18 +64,18 @@ function assertThrows(code) {
   } catch (e) {
     return;
   }
-  throw "Fail, didn't throw as expected";
+  throw new Error("Fail, didn't throw as expected");
 }
 
 function fail(mess) {
-  throw "Fail " + mess;
+  throw new Error("Fail " + mess);
 }
 
 let tests = [];
 function addTests(someTests) {
   for (let t in someTests) {
     if (tests[t]) {
-      throw `test ${t} already exists`;
+      throw new Error(`test ${t} already exists`);
     }
     tests[t] = someTests[t];
   }
