@@ -939,7 +939,7 @@ function pushInterpreter( ) {
   this[ 'TRUE' ] = new pushDefine( this.boolStack, true );
   this[ 'FALSE' ] = new pushDefine( this.boolStack, false );
 
-  this[ 'INPUT' ] = float_input;
+  // this[ 'INPUT' ] = float_input;
 
   this.randInstructions = getPushInstructionSet(this);
 
