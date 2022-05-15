@@ -93,5 +93,8 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
     shuffleArray(ret, randFloatFunc);
     return ret;
   }
+}
 
+function randomCode(maxPoints, interpreter, randFloatFunc) {
+  return randomCodeWithSize(interpreter.nextRandInt(maxPoints), interpreter, randFloatFunc)
 }

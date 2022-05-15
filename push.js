@@ -713,7 +713,7 @@ function pushInterpreter( ) {
   let stackNames = ['float', 'exec', 'code', 'int', 'bool', 'name'];
 
 
-  if (true) {
+  if (false) {
     let theThis = this;
     for (let stackName of stackNames) {
       let theStack = theThis[stackName+'Stack'];
@@ -740,7 +740,7 @@ function pushInterpreter( ) {
   }
 
   this.nextRandInt = function(maxVal) {
-    throw "not implemented";
+    return Math.floor(Math.random() * maxVal);
   };
 
   this.clearStacks = function() {
@@ -1065,6 +1065,15 @@ function pushIntStackPush( inInterpreter, inValue ) {
   return inInterpreter.intStack.push( inValue );
 }
 
+function getPushInstructionSet(inInterpreter) {
+  let keys = [];
+  for (let i in inInterpreter) {
+      if(/^[A-Z]/.test(i)) {
+        keys.push(i);
+      }
+  }
+  return keys;
+}
 /**
  * Parses a string into a Push program suitable for execution with an interpreter
  */

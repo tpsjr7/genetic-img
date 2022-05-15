@@ -26,6 +26,11 @@ function assertEquals(expected, actual, message) {
     throw mess;
   }
 }
+function assertTrue(expression) {
+  if (!expression) {
+    throw "not true";
+  }
+}
 function assertThrows(code) {
   try {
     code();
@@ -156,15 +161,28 @@ let tests = {
     //   return ret;
     // };
     randFloatFunc = makeRandomSeq([0.03, 0.01, 0.96, 0.07, 0.88, 0.84, 0.44, 0.93]);
-    interpreter.nextRandInt = makeRandomSeq([0, 1, 1, 1, 1, 3, 1]);
+    interpreter.nextRandInt = makeRandomSeq([7, 0, 1, 1, 1, 1, 3, 1]);
 
-    let actual = randomCodeWithSize(7, interpreter, randFloatFunc).toString();
+    let actual = randomCode(10, interpreter, randFloatFunc).toString();
     let expected =  '( -10 ( INTEGER.MAX ) ( INTEGER.+ ) INTEGER.+ )';
     assertEquals(expected, actual);
 
     assertThrows(()=>{
       randomCodeWithSize(0, interpreter, randFloatFunc);
     });
+  },
+  testGetPushInstructions() {
+    let pi = {
+      'aThing': 1,
+      'FLOAT.+': 1,
+      'INTEGER.+': 1
+    };
+    let keys = getPushInstructionSet(pi);
+    assertEquals(['FLOAT.+', 'INTEGER.+'], keys);
+
+    pi = new pushInterpreter();
+    keys = getPushInstructionSet(pi);
+    assertTrue(keys.length > 100);
   }
 };
 
