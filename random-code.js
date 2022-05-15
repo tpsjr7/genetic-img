@@ -9,7 +9,7 @@ function DECOMPOSE (inputs: NUMBER,  MAX-PARTS)
       (NUMBER - THIS-PART) and (MAX-PARTS - 1)
 End
 */
-function decompose(number, maxParts, randomFunc) {
+function decompose(number, maxParts, randomIntFunc) {
   if (number == 0) {
     return [];
   }
@@ -17,9 +17,9 @@ function decompose(number, maxParts, randomFunc) {
     return [number];
   }
 
-  let thisPart = randomFunc(number - 1) + 1;
+  let thisPart = randomIntFunc(number - 1) + 1;
   let toReturn = [thisPart];
-  for (let val of decompose(number - thisPart, maxParts - 1, randomFunc)) {
+  for (let val of decompose(number - thisPart, maxParts - 1, randomIntFunc)) {
     toReturn.push(val);
   }
   return toReturn;
@@ -39,7 +39,15 @@ Function RANDOM-CODE-WITH-SIZE (input: POINTS)
       SIZES-THIS-LEVEL.
 End
 */
-
+/* Randomize array in-place using Durstenfeld shuffle algorithm */
+function shuffleArray(array, randFloatFunc) {
+    for (var i = array.length - 1; i > 0; i--) {
+        var j = Math.floor(randFloatFunc() * (i + 1));
+        var temp = array[i];
+        array[i] = array[j];
+        array[j] = temp;
+    }
+}
 function randIntRange(min, max, randFloatFunc) {
   return Math.floor(randFloatFunc() * ( max - min + 1)) + min;
 }
@@ -47,6 +55,7 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
   if (points == 1) {
     let conf = interpreter.conf;
     if (randFloatFunc() < conf['RAND-CONST-PROB']) {
+      // choose random constant
       let min, max;
       switch(interpreter.nextRandInt(3)) {
         case 0: // bool
@@ -59,9 +68,29 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
           min = conf['MIN-RANDOM-FLOAT'];
           max = conf['MAX-RANDOM-FLOAT'];
           return randFloatFunc() * (max - min) + min;
+        default:
+          throw "invalid case"
       }
-      // bool, int, float
+    } else {
+      // choose random element
+      let inst = interpreter.conf.randomInstructions;
+      return inst[interpreter.nextRandInt(inst.length)];
     }
+  } else if (points != 1) {
+    /*
+    Otherwise set SIZES-THIS-LEVEL to the result of DECOMPOSE
+        called with both inputs (POINTS - 1). Return a list
+        containing the results, in random order, of
+        RANDOM-CODE-WITH-SIZE called with all inputs in
+        SIZES-THIS-LEVEL.
+    */
+    let sizesThisLevel = decompose(points - 1, points - 1, interpreter.nextRandInt);
+    let ret = [];
+    for (let val of sizesThisLevel) {
+      ret.push(randomCodeWithSize(val, interpreter, randFloatFunc));
+    }
+    shuffleArray(ret, randFloatFunc);
+    return ret;
   }
 
 }

@@ -12,7 +12,13 @@ function makeRandomSeq(seq){
 
 function assertEquals(expected, actual, message) {
   if (typeof expected != typeof actual) {
-    throw `Fail: types dont match. Expected:${typeof expected} vs Actual:${typeof actual}`;
+    throw `Fail: types dont match. Expected: ${expected} vs Actual: ${actual}`;
+  }
+  if (Array.isArray(expected) && Array.isArray(actual)) {
+    if (expected.length != actual.length || expected.toString() !== actual.toString()) {
+      throw `Failed. Excepted: ${expected}, Actual: ${actual}`;
+    }
+    return;
   }
   if (expected !== actual) {
     let mess = message ?  message + ', ' : '';
@@ -74,14 +80,7 @@ let tests = {
     //MAX-PARTS is 1
     assertEquals('( 10 )', decompose(10, 1, null).toString());
 
-    let count=0;
-    let rand = function(max){
-      let vals = [0.3, 0.34, 0.56, 0.574, 0.2, 0.9];
-      let ret = Math.floor(vals[count++] * max);
-      // console.log('rand: ' + ret);
-      return ret;
-    };
-    assertEquals('( 3 3 2 1 1 )', decompose(10, 10, rand).toString());
+    assertEquals('( 3 3 2 1 1 )', decompose(10, 10, makeRandomSeq([2, 2, 1, 0])).toString());
   },
   testRandomCodeWithSize() {
     let interpreter = new pushInterpreter();
@@ -91,21 +90,33 @@ let tests = {
       'INTEGER.-',
       'INTEGER.MAX'
     ];
+
+    // choose random float
     interpreter.nextRandInt = makeRandomSeq([2, 1]);
-    let randFloatFunc = makeRandomSeq([0.04, 0.75, 0.0, 0.75]);
-
+    let randFloatFunc = makeRandomSeq([0.04, 0.75, 0.0, 0.85]);
     assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
 
+    // choose random int
     interpreter.clearStacks();
-    assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
+    assertEquals(7, randomCodeWithSize(1, interpreter, randFloatFunc));
 
+    // choose random bool
     interpreter.clearStacks();
-
     interpreter.nextRandInt = makeRandomSeq([0, 0]);
     assertEquals('TRUE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.9])));
     interpreter.clearStacks();
     assertEquals('FALSE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.2])));
 
+    // choose random element
+    interpreter.clearStacks();
+    interpreter.nextRandInt = makeRandomSeq([2]);
+    assertEquals('INTEGER.-', randomCodeWithSize(1, interpreter, makeRandomSeq([0.1])));
+
+    // more than one point
+    interpreter.clearStacks();
+    randFloatFunc = makeRandomSeq([0.1, 0.1, 0.5]);
+    interpreter.nextRandInt = makeRandomSeq([0, 0, 0]);
+    assertEquals(['CODE.NOOP', 'CODE.NOOP'], randomCodeWithSize(3, interpreter, randFloatFunc));
   }
 };
 
