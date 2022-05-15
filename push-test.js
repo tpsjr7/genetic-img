@@ -1,5 +1,5 @@
 
-let tests = {
+addTests({
   testAssertEquals() {
     assertEquals([0], [0]);
     assertEquals([0, [3]], [0, [3]]);
@@ -153,18 +153,6 @@ let tests = {
     pushRunProgram(pi, program);
     assertEquals(1, pi.floatStack.length);
   }
-};
-//this[ 'FLOAT.FROMINTEGER' ] = new pushInstruction( this.floatStack, pushInstructionFromInteger );
+});
 
-function runTests() {
-  try {
-    for (let test in tests) {
-      console.log('Running ' + test);
-      tests[test]();
-    }
-    document.write('<h1 style="color: green">Pass</h1>');
-  } catch (e) {
-    console.warn(e);
-    document.write('<h1 style="color: red">Fail</h1>');
-  }
-}
+//this[ 'FLOAT.FROMINTEGER' ] = new pushInstruction( this.floatStack, pushInstructionFromInteger );

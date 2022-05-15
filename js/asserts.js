@@ -43,3 +43,27 @@ function assertThrows(code) {
 function fail(mess) {
   throw "Fail " + mess;
 }
+
+let tests = [];
+function addTests(someTests) {
+  for (let t in someTests) {
+    if (tests[t]) {
+      throw `test ${t} already exists`;
+    }
+    tests[t] = someTests[t];
+  }
+}
+function runTests() {
+  try {
+    let count = 0;
+    for (let test of Object.keys(tests)) {
+      count++;
+      console.log('Running ' + test);
+      tests[test]();
+    }
+    document.write(`<h1 style="color: green">${count} Pass</h1>`);
+  } catch (e) {
+    console.warn(e);
+    document.write('<h1 style="color: red">Fail</h1>');
+  }
+}
