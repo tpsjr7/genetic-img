@@ -12,7 +12,7 @@ function makeRandomSeq(seq){
 
 function assertEquals(expected, actual, message) {
   if (typeof expected != typeof actual) {
-    throw 'Fail: types dont match';
+    throw `Fail: types dont match. Expected:${typeof expected} vs Actual:${typeof actual}`;
   }
   if (expected !== actual) {
     let mess = message ?  message + ', ' : '';
@@ -91,9 +91,21 @@ let tests = {
       'INTEGER.-',
       'INTEGER.MAX'
     ];
-    interpreter.nextRandInt = makeRandomSeq([2]);
-    let randFloatFunc = makeRandomSeq([0.04, 0.75]);
+    interpreter.nextRandInt = makeRandomSeq([2, 1]);
+    let randFloatFunc = makeRandomSeq([0.04, 0.75, 0.0, 0.75]);
+
     assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
+
+    interpreter.clearStacks();
+    assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
+
+    interpreter.clearStacks();
+
+    interpreter.nextRandInt = makeRandomSeq([0, 0]);
+    assertEquals('TRUE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.9])));
+    interpreter.clearStacks();
+    assertEquals('FALSE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.2])));
+
   }
 };
 

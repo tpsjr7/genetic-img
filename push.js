@@ -678,7 +678,9 @@ function pushInterpreter( ) {
   this.conf = {
     'RAND-CONST-PROB': 0.05,
     'MIN-RANDOM-FLOAT': -10.0,
-    'MAX-RANDOM-FLOAT': 10.0
+    'MAX-RANDOM-FLOAT': 10.0,
+    'MAX-RANDOM-INTEGER': 10,
+    'MIN-RANDOM-INTEGER': -10
   };
 
 

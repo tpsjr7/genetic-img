@@ -50,7 +50,7 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
       let min, max;
       switch(interpreter.nextRandInt(3)) {
         case 0: // bool
-          return randIntRange(2, randFloatFunc) == 0 ? ['TRUE'] : ['FALSE'];
+          return randIntRange(0, 1, randFloatFunc) == 1 ? 'TRUE' : 'FALSE';
         case 1: // int
           min = conf['MIN-RANDOM-INTEGER'];
           max = conf['MAX-RANDOM-INTEGER'];
