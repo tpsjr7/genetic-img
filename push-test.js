@@ -80,26 +80,6 @@ let tests = {
     let info = pushRunProgram( interpreter, program );
     assertEquals(interpreter.intStack[0], 12);
   },
-  testCodeRand() {
-    let interpreter = new pushInterpreter();
-    interpreter.randInstructions = ['INTEGER.+', 'CODE.NOOP'];
-    interpreter.conf['MAX-POINTS-IN-RANDOM-EXPRESSIONS'] = 4;
-
-    let count = 0;
-    let seq = [4,0,1,1,0];
-    interpreter.nextRandInt = function() {
-      if (count >= seq.length){
-        throw "out of range";
-      }
-      return seq[count++];
-    };
-
-    let program = pushParseString('( 4 CODE.RAND )' );
-    pushRunProgram( interpreter, program );
-
-    let item = interpreter.codeStack.pop();
-    assertEquals('( INTEGER.+ CODE.NOOP CODE.NOOP INTEGER.+ )', item.toString());
-  },
   testDecompose() {
 
     // then return a list containing NUMBER
@@ -112,7 +92,7 @@ let tests = {
   },
   testRandomCodeWithSize() {
     let interpreter = new pushInterpreter();
-    interpreter.conf.randomInstructions = [
+    interpreter.randInstructions = [
       'CODE.NOOP',
       'INTEGER.+',
       'INTEGER.-',
@@ -160,11 +140,15 @@ let tests = {
     //   choseInts.push(ret);
     //   return ret;
     // };
-    randFloatFunc = makeRandomSeq([0.03, 0.01, 0.96, 0.07, 0.88, 0.84, 0.44, 0.93]);
-    interpreter.nextRandInt = makeRandomSeq([7, 0, 1, 1, 1, 1, 3, 1]);
+    randFloatFunc = makeRandomSeq([0.75,0.03,0.94,0.7,0.14,0.7,0.45,0.43,0.94,0.14,0.88]);
+    interpreter.nextRandInt = makeRandomSeq([2,1,0,0,1,1,3,1,1]);
 
     let actual = randomCode(10, interpreter, randFloatFunc).toString();
-    let expected =  '( -10 ( INTEGER.MAX ) ( INTEGER.+ ) INTEGER.+ )';
+
+    // console.log(choseFloats.join(','));
+    // console.log(choseInts.join(','));
+
+    let expected =  '( INTEGER.+ ( INTEGER.MAX ) ( INTEGER.+ 9 ) INTEGER.+ )';
     assertEquals(expected, actual);
 
     assertThrows(()=>{
@@ -183,6 +167,18 @@ let tests = {
     pi = new pushInterpreter();
     keys = getPushInstructionSet(pi);
     assertTrue(keys.length > 100);
+
+    assertEquals(pi.randInstructions, keys);
+  },
+  testPushInstructionRandomCode() {
+    let pi = new pushInterpreter();
+    let program = pushParseString('( 10 CODE.RAND )' );
+    pushRunProgram(pi, program);
+
+    let item = pi.codeStack.pop();
+    // console.log(item.toString());
+    assertEquals(1, pi.codeStack.length);
+    assertTrue(pi.codeStack[0].length >= 1);
   }
 };
 

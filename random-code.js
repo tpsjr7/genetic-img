@@ -74,7 +74,7 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
       }
     } else {
       // choose random element
-      let inst = interpreter.conf.randomInstructions;
+      let inst = interpreter.randInstructions;
       return inst[interpreter.nextRandInt(inst.length)];
     }
   } else if (points != 1) {
@@ -96,5 +96,5 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
 }
 
 function randomCode(maxPoints, interpreter, randFloatFunc) {
-  return randomCodeWithSize(interpreter.nextRandInt(maxPoints), interpreter, randFloatFunc)
+  return randomCodeWithSize(randIntRange(1, maxPoints, randFloatFunc), interpreter, randFloatFunc)
 }

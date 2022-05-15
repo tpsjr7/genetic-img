@@ -175,13 +175,9 @@ function pushInstructionRandomCode( inInterpreter, inStack ) {
   }
   let maxSize = inInterpreter.intStack.pop() % maxPoints;
   let len = inInterpreter.nextRandInt(maxSize)
-  let expression = '( ';
-  let nInstructions = randInstructions.length;
-  for (let i = 0 ; i < len ; i++) {
-    expression += randInstructions[inInterpreter.nextRandInt(nInstructions - 1)] + ' ';
-  }
-  expression += ')';
-  inInterpreter.codeStack.push(expression);
+
+  let code = randomCode(maxSize, inInterpreter, Math.random);
+  inInterpreter.codeStack.push(code);
   return;
 }
 
@@ -680,7 +676,8 @@ function pushInterpreter( ) {
     'MIN-RANDOM-FLOAT': -10.0,
     'MAX-RANDOM-FLOAT': 10.0,
     'MAX-RANDOM-INTEGER': 10,
-    'MIN-RANDOM-INTEGER': -10
+    'MIN-RANDOM-INTEGER': -10,
+    'MAX-POINTS-IN-RANDOM-EXPRESSIONS': 25
   };
 
 
@@ -943,6 +940,8 @@ function pushInterpreter( ) {
   this[ 'FALSE' ] = new pushDefine( this.boolStack, false );
 
   this[ 'INPUT' ] = float_input;
+
+  this.randInstructions = getPushInstructionSet(this);
 
   /// Canvas stuff
   let canvasElem = document.getElementsByTagName('canvas')[0];
