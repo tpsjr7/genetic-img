@@ -675,7 +675,11 @@ function pushInterpreter( ) {
 
   this._nameCounter = 0;
 
-  this.conf = {};
+  this.conf = {
+    'RAND-CONST-PROB': 0.05,
+    'MIN-RANDOM-FLOAT': -10.0,
+    'MAX-RANDOM-FLOAT': 10.0
+  };
 
 
   this.intStack.push = function( inValue ) {

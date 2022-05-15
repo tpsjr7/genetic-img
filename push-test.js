@@ -82,6 +82,18 @@ let tests = {
       return ret;
     };
     assertEquals('( 3 3 2 1 1 )', decompose(10, 10, rand).toString());
+  },
+  testRandomCodeWithSize() {
+    let interpreter = new pushInterpreter();
+    interpreter.conf.randomInstructions = [
+      'CODE.NOOP',
+      'INTEGER.+',
+      'INTEGER.-',
+      'INTEGER.MAX'
+    ];
+    interpreter.nextRandInt = makeRandomSeq([2]);
+    let randFloatFunc = makeRandomSeq([0.04, 0.75]);
+    assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
   }
 };
 

@@ -39,3 +39,29 @@ Function RANDOM-CODE-WITH-SIZE (input: POINTS)
       SIZES-THIS-LEVEL.
 End
 */
+
+function randIntRange(min, max, randFloatFunc) {
+  return Math.floor(randFloatFunc() * ( max - min + 1)) + min;
+}
+function randomCodeWithSize(points, interpreter, randFloatFunc) {
+  if (points == 1) {
+    let conf = interpreter.conf;
+    if (randFloatFunc() < conf['RAND-CONST-PROB']) {
+      let min, max;
+      switch(interpreter.nextRandInt(3)) {
+        case 0: // bool
+          return randIntRange(2, randFloatFunc) == 0 ? ['TRUE'] : ['FALSE'];
+        case 1: // int
+          min = conf['MIN-RANDOM-INTEGER'];
+          max = conf['MAX-RANDOM-INTEGER'];
+          return randIntRange(min, max, randFloatFunc);
+        case 2: // float
+          min = conf['MIN-RANDOM-FLOAT'];
+          max = conf['MAX-RANDOM-FLOAT'];
+          return randFloatFunc() * (max - min) + min;
+      }
+      // bool, int, float
+    }
+  }
+
+}
