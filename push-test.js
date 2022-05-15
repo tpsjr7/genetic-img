@@ -140,6 +140,31 @@ let tests = {
     randFloatFunc = makeRandomSeq([0.1, 0.1, 0.5]);
     interpreter.nextRandInt = makeRandomSeq([0, 0, 0]);
     assertEquals(['CODE.NOOP', 'CODE.NOOP'], randomCodeWithSize(3, interpreter, randFloatFunc));
+
+    interpreter.clearStacks();
+
+    // choseFloats = [];
+    // randFloatFunc = () => {
+    //   let ret = parseFloat(Math.random().toFixed(2));
+    //   choseFloats.push(ret);
+    //   return ret;
+    // }
+    // choseInts = [];
+    // interpreter.nextRandInt = (max)=>{
+    //   let ret = Math.floor(Math.random() * max)
+    //   choseInts.push(ret);
+    //   return ret;
+    // };
+    randFloatFunc = makeRandomSeq([0.03, 0.01, 0.96, 0.07, 0.88, 0.84, 0.44, 0.93]);
+    interpreter.nextRandInt = makeRandomSeq([0, 1, 1, 1, 1, 3, 1]);
+
+    let actual = randomCodeWithSize(7, interpreter, randFloatFunc).toString();
+    let expected =  '( -10 ( INTEGER.MAX ) ( INTEGER.+ ) INTEGER.+ )';
+    assertEquals(expected, actual);
+
+    assertThrows(()=>{
+      randomCodeWithSize(0, interpreter, randFloatFunc);
+    });
   }
 };
 

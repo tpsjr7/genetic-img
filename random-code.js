@@ -52,6 +52,7 @@ function randIntRange(min, max, randFloatFunc) {
   return Math.floor(randFloatFunc() * ( max - min + 1)) + min;
 }
 function randomCodeWithSize(points, interpreter, randFloatFunc) {
+  if (points < 1) throw "points must be > 0";
   if (points == 1) {
     let conf = interpreter.conf;
     if (randFloatFunc() < conf['RAND-CONST-PROB']) {
