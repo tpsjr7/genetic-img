@@ -26,10 +26,33 @@ function assertEquals(expected, actual, message) {
     throw mess;
   }
 }
+function assertThrows(code) {
+  try {
+    code();
+
+  } catch (e) {
+    return;
+  }
+  throw "Fail, didn't throw as expected";
+}
+
 function fail(mess) {
   throw "Fail " + mess;
 }
 let tests = {
+  testAssertEquals() {
+    assertEquals([0], [0]);
+    assertEquals([0, [3]], [0, [3]]);
+    assertThrows(() => {
+      assertEquals([0, [4]], [0, [3]]);
+    });
+    assertThrows(() => {
+      assertEquals({}, []);
+    });
+    assertThrows(() => {
+      assertEquals('true', true);
+    });
+  },
   testMakeRanSeq() {
     let rand = makeRandomSeq([4,3,7]);
     assertEquals(4, rand());
