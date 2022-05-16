@@ -661,7 +661,7 @@ function float_input( inInterpreter ) {
   inInterpreter.intStack.push( inInterpreter[ 'inputValue' ] );
 }
 
-function pushInterpreter( ) {
+function pushInterpreter(canvasElem) {
   this.floatStack = [];
   this.execStack = [];
   this.codeStack = [];
@@ -944,41 +944,10 @@ function pushInterpreter( ) {
   this.randInstructions = getPushInstructionSet(this);
 
   /// Canvas stuff
-  let canvasElem = document.getElementsByTagName('canvas')[0];
   if (canvasElem) {
-    let Canvas = function(){
-      let _canvas = canvasElem;
-      let WIDTH = _canvas.width;
-      let HEIGHT = _canvas.height;
-      let ctx = _canvas.getContext('2d');
-      let currentX, currentY, theta = 0;
-      let _moveTo = function(x, y) {
-        currentY = y + HEIGHT / 2;
-        currentX = x + WIDTH / 2;
-      }
-      _moveTo(0,0);
-      this.moveTo = function(x, y) {
-        _moveTo(x, y);
-        ctx.moveTo(currentX, currentY);
-      }
-      this.forward = function(dist) {
-        let rads = Math.PI / 180 * theta;
-        let xNew = currentX + dist * Math.cos(rads);
-        let yNew = currentY + dist * Math.sin(rads);
-        currentX = xNew;
-        currentY = yNew;
-        ctx.lineTo(xNew, yNew);
-        ctx.stroke();
-      }
-      this.turn = function(degrees) {
-        theta += degrees;
-      }
-    }
-
-    let canvas = new Canvas();
-
-    this[ 'FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
-      if( inStack.length >= 2 ) {
+    let canvas = new Canvas(canvasElem);
+    this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
+      if (inStack.length >= 2) {
         canvas.moveTo(inStack.pop(), inStack.pop());
       }
     });
@@ -994,8 +963,6 @@ function pushInterpreter( ) {
     });
   }
   /// End Canvas stuff
-
-
 }
 
 /**
@@ -1007,8 +974,6 @@ function pushRunProgram( inInterpreter, inProgramArray ) {
   var atom;
 
   inInterpreter._effort = 0;
-
-  var test = new Array();
 
   inInterpreter.codeStack.push( inProgramArray );
   inInterpreter.execStack.push( inProgramArray );

@@ -21,6 +21,10 @@ class CanvasManager {
     };
   }
 
+  getCanvas(i) {
+    return this.canvases[i];
+  }
+
   createCanvases() {
     if (this.canvases.length != 0) {
       throw new Error('already created');
