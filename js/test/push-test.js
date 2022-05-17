@@ -3,6 +3,19 @@ addTests({
   testAssertEquals() {
     assertEquals([0], [0]);
     assertEquals([0, [3]], [0, [3]]);
+    assertEquals(1, 1);
+    assertEquals({}, {});
+    assertEquals({a:1}, {a:1});
+    assertEquals({a:1, b:2}, {b:2, a:1});
+    assertThrows(() => { assertEquals(1, 2);});
+    assertThrows(() => { assertEquals([], [1]);});
+    assertThrows(() => { assertEquals([], {});});
+    assertThrows(() => { assertEquals({a:1}, {b:1});});
+    assertThrows(() => { assertEquals({a:1}, {a:2});});
+    assertThrows(() => { assertEquals({a:1}, {a:1, b:2});});
+    assertThrows(() => { assertEquals({a:1, b:2}, {a:1});});
+    assertThrows(() => { assertEquals("1", 1);});
+
     assertThrows(() => {
       assertEquals([0, [4]], [0, [3]]);
     });
