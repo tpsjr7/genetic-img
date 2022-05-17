@@ -41,7 +41,7 @@ function assertEquals(expected, actual, message) {
     return;
   }
 
-  if (isEqual(expected, actual)) {
+  if (typeof expected === 'object' && isEqual(expected, actual)) {
     return;
   }
 

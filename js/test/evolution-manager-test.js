@@ -3,7 +3,7 @@ addTests({
        let em = new EvolutionManager();
        em.conf.popSize = 100;
        em.initPop();
-       em.scorePoputation();
+       em.scorePopulation();
        let best = em.getTopScoring(16);
    }
 });

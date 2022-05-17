@@ -28,7 +28,7 @@ class EvolutionManager {
         }
     }
 
-    scorePoputation() {
+    scorePopulation() {
         let n = this.conf.popSize;
         for (let i = 0 ; i < n ; i++) {
             let pi = new pushInterpreter(cm.getCanvas(i));

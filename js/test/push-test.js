@@ -152,6 +152,25 @@ addTests({
     let program = pushParseString('(0.9 FLOAT.FROMINTEGER)' );
     pushRunProgram(pi, program);
     assertEquals(1, pi.floatStack.length);
+  },
+  testExecutionCounts() {
+    let mockCanvas = {
+      moveTo(){},
+      forward(){},
+      turn(){},
+      getContext(){return {
+        moveTo(){},
+        lineTo(){},
+        stroke(){}
+      };}
+    };
+    let pi = new pushInterpreter(mockCanvas);
+    pi.floatStack.push(...[1, 1, 1, 1, 3, 5]);
+    let program = pushParseString('(FLOAT.CV_MOVE_TO FLOAT.CV_FORWARD FLOAT.CV_TURN FLOAT.CV_MOVE_TO)' );
+    pushRunProgram(pi, program);
+    assertEquals(2, pi.executionCounts['FLOAT.CV_MOVE_TO']);
+    assertEquals(1, pi.executionCounts['FLOAT.CV_FORWARD']);
+    assertEquals(1, pi.executionCounts['FLOAT.CV_TURN']);
   }
 });
 

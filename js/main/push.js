@@ -662,6 +662,9 @@ function float_input( inInterpreter ) {
 }
 
 function pushInterpreter(canvasElem) {
+
+  this.executionCounts = {};
+
   this.floatStack = [];
   this.execStack = [];
   this.codeStack = [];
@@ -948,16 +951,19 @@ function pushInterpreter(canvasElem) {
     let canvas = new Canvas(canvasElem);
     this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
       if (inStack.length >= 2) {
+        inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
         canvas.moveTo(inStack.pop(), inStack.pop());
       }
     });
     this[ 'FLOAT.CV_FORWARD']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
       if( inStack.length >= 1 ) {
+        inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
         canvas.forward(inStack.pop());
       }
     });
     this[ 'FLOAT.CV_TURN']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
       if( inStack.length >= 1 ) {
+        inInterpreter.executionCounts['FLOAT.CV_TURN']++;
         canvas.turn(inStack.pop());
       }
     });
@@ -972,6 +978,11 @@ function pushInterpreter(canvasElem) {
  */
 function pushRunProgram( inInterpreter, inProgramArray ) {
   var atom;
+
+  inInterpreter.executionCounts = {};
+  for (let key of getPushInstructionSet(inInterpreter)) {
+    inInterpreter.executionCounts[key] = 0;
+  }
 
   inInterpreter._effort = 0;
 
