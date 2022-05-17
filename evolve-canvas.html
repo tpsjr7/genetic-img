@@ -5,7 +5,7 @@
 <body>
 
   <script>
-    let cm = new CanvasManager(window, 15);
+    let cm = new EnvironmentManager(window, 15);
     cm.createCanvases();
     window.addEventListener('resize', ()=>{
       cm.positionCanvases()

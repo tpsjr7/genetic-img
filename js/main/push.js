@@ -663,6 +663,9 @@ function float_input( inInterpreter ) {
 
 function pushInterpreter(canvasElem) {
 
+  if (!canvasElem) {
+    throw new Error("Missing canvas");
+  }
   this.executionCounts = {};
 
   this.floatStack = [];

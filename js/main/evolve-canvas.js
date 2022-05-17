@@ -1,4 +1,4 @@
-class CanvasManager {
+class EnvironmentManager {
   canvases = [];
   nCanvases;
   window;
@@ -21,12 +21,14 @@ class CanvasManager {
     };
   }
 
-  getCanvas(i) {
-    return this.canvases[i];
+  getCanvasElem(i) {
+    let c = this.canvases[i];
+    if (!c) throw new Error("invalid canvas number");
+    return c;
   }
 
   createCanvases() {
-    if (this.canvases.length != 0) {
+    if (this.canvases.length !== 0) {
       throw new Error('already created');
     }
 
