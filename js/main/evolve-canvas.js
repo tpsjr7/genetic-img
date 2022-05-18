@@ -1,4 +1,4 @@
-class EnvironmentManager {
+export class EnvironmentManager {
   canvases = [];
   nCanvases;
   window;

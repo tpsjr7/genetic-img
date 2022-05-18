@@ -1,3 +1,6 @@
+import {addTests, assertEquals} from "./asserts.js";
+import {EnvironmentManager} from "../main/evolve-canvas.js";
+
 addTests({
   testCanvasDraw() {
     let window = {

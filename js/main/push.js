@@ -23,8 +23,12 @@
 //
 
 // slight modification to built-in types to lets us compare them like program
+// export let window.logState;
 
-String.prototype.equals = function( inOther ) {
+import {Canvas} from "./push-canvas.js";
+import {randomCode} from "./random-code.js";
+
+String.prototype.equals = function(inOther ) {
   return inOther == this;
 }
 
@@ -661,7 +665,7 @@ function float_input( inInterpreter ) {
   inInterpreter.intStack.push( inInterpreter[ 'inputValue' ] );
 }
 
-function pushInterpreter(canvasElem) {
+export function pushInterpreter(canvasElem) {
 
   if (!canvasElem) {
     throw new Error("Missing canvas");
@@ -723,8 +727,8 @@ function pushInterpreter(canvasElem) {
       theStack.pop = (function(me, origFunc, pushInt){
         return function(){
           let retval = origFunc.call(me);
-          if (logState) {
-            logState(pushInt, "pop " + stackName + ' = ' + retval);
+          if (window.logState) {
+            window.logState(pushInt, "pop " + stackName + ' = ' + retval);
           }
           return retval;
         };
@@ -733,8 +737,8 @@ function pushInterpreter(canvasElem) {
       theStack.push = (function(me, origFunc, pushInt){
         return function(val){
           let retval = origFunc.call(me, val);
-          if (logState) {
-            logState(pushInt, "push " + stackName + ' = ' + val );
+          if (window.logState) {
+            window.logState(pushInt, "push " + stackName + ' = ' + val );
           }
           return retval;
         };
@@ -947,8 +951,6 @@ function pushInterpreter(canvasElem) {
 
   // this[ 'INPUT' ] = float_input;
 
-  this.randInstructions = getPushInstructionSet(this);
-
   /// Canvas stuff
   if (canvasElem) {
     let canvas = new Canvas(canvasElem);
@@ -971,6 +973,8 @@ function pushInterpreter(canvasElem) {
       }
     });
   }
+
+  this.randInstructions = getPushInstructionSet(this);
   /// End Canvas stuff
 }
 
@@ -979,7 +983,7 @@ function pushInterpreter(canvasElem) {
  *
  * @return 0 upon success, or -1 on error.
  */
-function pushRunProgram( inInterpreter, inProgramArray ) {
+export function pushRunProgram( inInterpreter, inProgramArray ) {
   var atom;
 
   inInterpreter.executionCounts = {};
@@ -1009,13 +1013,13 @@ function pushRunProgram( inInterpreter, inProgramArray ) {
         inInterpreter.nameStack.push( atom );
       } else if( isPushInstruction( func ) || isPushDefine( func ) ) {
 
-        logState && logState(inInterpreter, 'before run ' + atom);
+        window.logState && window.logState(inInterpreter, 'before run ' + atom);
         func.call( inInterpreter );
-        logState && logState(inInterpreter, 'after run ' + atom);
+        window.logState && window.logState(inInterpreter, 'after run ' + atom);
       } else {
-        logState && logState(inInterpreter, 'before run ' + atom);
+        window.logState && window.logState(inInterpreter, 'before run ' + atom);
         func( inInterpreter );
-        logState && logState(inInterpreter, 'after run ' + atom);
+        window.logState && window.logState(inInterpreter, 'after run ' + atom);
       }
     }
 
@@ -1043,7 +1047,7 @@ function pushIntStackPush( inInterpreter, inValue ) {
   return inInterpreter.intStack.push( inValue );
 }
 
-function getPushInstructionSet(inInterpreter) {
+export function getPushInstructionSet(inInterpreter) {
   let keys = [];
   for (let i in inInterpreter) {
       if(/^[A-Z]/.test(i)) {
@@ -1055,7 +1059,7 @@ function getPushInstructionSet(inInterpreter) {
 /**
  * Parses a string into a Push program suitable for execution with an interpreter
  */
-function pushParseString( inString ) {
+export function pushParseString( inString ) {
   // insert spaces around all parens so that our split works
 
   var parens = /[\(\)]/;

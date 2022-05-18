@@ -1,4 +1,4 @@
-function Canvas(canvasElem){
+export function Canvas(canvasElem){
     let _canvas = canvasElem;
     let WIDTH = _canvas.width;
     let HEIGHT = _canvas.height;

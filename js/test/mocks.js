@@ -1,11 +1,11 @@
-class MockCanvas {
+export class MockCanvas {
     moveTo(){}
     forward(){}
     turn(){}
 
 };
 
-class MockCanvasElement {
+export class MockCanvasElement {
     style = {};
     getContext(){
         return {
@@ -16,7 +16,7 @@ class MockCanvasElement {
     }
 }
 
-class MockWindow {
+export class MockWindow {
     innerWidth = 1000;
     innerHeight = 1000;
     document = {
@@ -29,7 +29,7 @@ class MockWindow {
     }
 }
 
-class MockCanvasFactory {
+export class MockCanvasFactory {
     create(){
         return new MockCanvasElement();
     }

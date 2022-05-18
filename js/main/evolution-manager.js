@@ -1,4 +1,8 @@
-class EvolutionManager {
+import "./push.js"
+import {pushInterpreter, pushRunProgram} from "./push.js";
+import {randomCode} from "./random-code.js";
+
+export class EvolutionManager {
     population = [];
     conf = {
         popSize: null,

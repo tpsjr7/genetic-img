@@ -1,5 +1,5 @@
 
-function makeRandomSeq(seq){
+export function makeRandomSeq(seq){
   let count = 0;
   return function() {
     if (count >= seq.length){
@@ -30,7 +30,7 @@ function isObject(object) {
   return object != null && typeof object === 'object';
 }
 
-function assertEquals(expected, actual, message) {
+export function assertEquals(expected, actual, message) {
   if (typeof expected !== typeof actual) {
     throw new Error(`Fail: types dont match. Expected: ${expected} vs Actual: ${actual}`);
   }
@@ -52,12 +52,14 @@ function assertEquals(expected, actual, message) {
     throw new Error(mess);
   }
 }
-function assertTrue(expression) {
+
+export function assertTrue(expression) {
   if (!expression) {
     throw new Error("not true");
   }
 }
-function assertThrows(code) {
+
+export function assertThrows(code) {
   try {
     code();
 
@@ -67,12 +69,12 @@ function assertThrows(code) {
   throw new Error("Fail, didn't throw as expected");
 }
 
-function fail(mess) {
+export function fail(mess) {
   throw new Error("Fail " + mess);
 }
 
 let tests = [];
-function addTests(someTests) {
+export function addTests(someTests) {
   for (let t in someTests) {
     if (tests[t]) {
       throw new Error(`test ${t} already exists`);
@@ -80,7 +82,7 @@ function addTests(someTests) {
     tests[t] = someTests[t];
   }
 }
-function runTests() {
+export function runTests() {
   try {
     let count = 0;
     for (let test of Object.keys(tests)) {
@@ -88,9 +90,9 @@ function runTests() {
       console.log('Running ' + test);
       tests[test]();
     }
-    document.write(`<h1 style="color: green">${count} Pass</h1>`);
+    document.body.innerHTML = `<h1 style="color: green">${count} Pass</h1>`;
   } catch (e) {
     console.warn(e);
-    document.write('<h1 style="color: red">Fail</h1>');
+    document.body.innerHTML = '<h1 style="color: red">Fail</h1>';
   }
 }

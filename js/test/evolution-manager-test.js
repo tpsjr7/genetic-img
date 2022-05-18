@@ -1,3 +1,8 @@
+import {addTests, assertEquals, assertTrue} from "./asserts.js";
+import {EnvironmentManager} from "../main/evolve-canvas.js";
+import {EvolutionManager} from "../main/evolution-manager.js";
+import {MockWindow} from "./mocks.js";
+
 addTests({
     testGetTopScoring() {
         let window = new MockWindow();

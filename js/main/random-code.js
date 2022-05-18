@@ -9,7 +9,7 @@ function DECOMPOSE (inputs: NUMBER,  MAX-PARTS)
       (NUMBER - THIS-PART) and (MAX-PARTS - 1)
 End
 */
-function decompose(number, maxParts, randomIntFunc) {
+export function decompose(number, maxParts, randomIntFunc) {
   if (number == 0) {
     return [];
   }
@@ -48,10 +48,10 @@ function shuffleArray(array, randFloatFunc) {
         array[j] = temp;
     }
 }
-function randIntRange(min, max, randFloatFunc) {
+export function randIntRange(min, max, randFloatFunc) {
   return Math.floor(randFloatFunc() * ( max - min + 1)) + min;
 }
-function randomCodeWithSize(points, interpreter, randFloatFunc) {
+export function randomCodeWithSize(points, interpreter, randFloatFunc) {
   if (points < 1) throw "points must be > 0";
   if (points == 1) {
     let conf = interpreter.conf;
@@ -95,6 +95,6 @@ function randomCodeWithSize(points, interpreter, randFloatFunc) {
   }
 }
 
-function randomCode(maxPoints, interpreter, randFloatFunc) {
+export function randomCode(maxPoints, interpreter, randFloatFunc) {
   return randomCodeWithSize(randIntRange(1, maxPoints, randFloatFunc), interpreter, randFloatFunc)
 }
