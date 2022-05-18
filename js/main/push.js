@@ -954,7 +954,8 @@ export function pushInterpreter(canvasElem) {
   /// Canvas stuff
   if (canvasElem) {
 
-    let canvas = new Canvas(canvasElem);
+    let canvas = new Canvas(canvasElem)
+    canvas.moveTo(0, 0);
 
     this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
       if (inStack.length >= 2) {
@@ -1144,9 +1145,10 @@ export function pushParseString( inString ) {
  *
  * @return The string state of the interpreter
  */
-function pushRunString( inProgram ) {
+
+export function pushRunString( inProgram, canvasElem ) {
   var program = pushParseString( inProgram );
-  var interpreter = new pushInterpreter();
+  var interpreter = new pushInterpreter(canvasElem);
 
   var info = pushRunProgram( interpreter, program )
 

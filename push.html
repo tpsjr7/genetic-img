@@ -1,8 +1,15 @@
 <html>
+<head>
+    <script type='module' src='js/main/push.js'></script>
+    <script type='module' src='js/main/random-code.js'></script>
+    <script type='module' src='js/main/environment-manager.js'></script>
+    <script type='module' src='js/main/push-canvas.js'></script>
+    <script type='module' src='js/main/evolution-manager.js'></script>
+</head>
 <body>
-<canvas width="300" height="300" style="border: solid black 1px;"></canvas>
+<canvas width="300" height="300" style="border: solid black 1px; float:left; "></canvas>
 <br>
-<textarea id="program" cols="40" rows="10">
+<textarea id="program" cols="40" rows="10" style="float: left;">
 (
 1 2 INTEGER.+
 )
@@ -10,10 +17,9 @@
 </textarea>
 </br>
 <input type="button" value="Run" onclick="run();"></input>
-<textarea id="output" cols=70 rows=20 style="position: absolute; top: 0; left: 200;"></textarea>
-<script src="random-code.js"></script>
-<script src="push.js"></script>
-<script>
+<textarea id="output" cols=70 rows=20 style="clear: left"></textarea>
+<script type="module">
+    import {pushRunString} from './js/main/push.js';
     let logout = '';
     function logState(inInterpreter, message) {
         if(!inInterpreter.clearStacks) {
@@ -32,10 +38,15 @@
         logout = '';
         document.getElementById('output').value='';
         let prog = document.getElementById('program');
-        let results = pushRunString(prog.value);
+        let results = pushRunString(
+            prog.value,
+            document.getElementsByTagName('canvas')[0]
+        );
         document.getElementById('output').innerHTML=results;
     }
     run();
+    window.logState = logState;
+    window.run = run;
 </script>
 </body>
 </html>

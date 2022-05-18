@@ -1,16 +1,36 @@
 <html>
 <head>
-    <script src='js/main/evolve-canvas.js'></script>
+    <script type='module' src='js/main/push.js'></script>
+    <script type='module' src='js/main/random-code.js'></script>
+    <script type='module' src='js/main/environment-manager.js'></script>
+    <script type='module' src='js/main/push-canvas.js'></script>
+    <script type='module' src='js/main/evolution-manager.js'></script>
 </head>
 <body>
+  <script type='module'>
+    import {EnvironmentManager} from './js/main/environment-manager.js';
+    import {EvolutionManager} from './js/main/evolution-manager.js';
 
-  <script>
-    let cm = new EnvironmentManager(window, 15);
-    cm.createCanvases();
+    let em = new EnvironmentManager(window, 100);
+    let ev = new EvolutionManager(em, 100);
+
+    window.em = em;
+    window.ev = ev;
+
     window.addEventListener('resize', ()=>{
-      cm.positionCanvases()
+        em.positionCanvases()
     });
 
+    ev.initPop();
+    ev.scorePopulation((interpreter, program)=>{
+        return interpreter.executionCounts['FLOAT.CV_FORWARD'];
+    });
+    let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
+    if ( goodOnes.length > 0) {
+        console.log('found');
+
+        console.log(goodOnes.map(it => ev.population[it.i].toString()));
+    }
   </script>
 </body>
 </html>

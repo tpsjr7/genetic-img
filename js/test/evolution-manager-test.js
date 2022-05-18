@@ -1,5 +1,5 @@
 import {addTests, assertEquals, assertTrue} from "./asserts.js";
-import {EnvironmentManager} from "../main/evolve-canvas.js";
+import {EnvironmentManager} from "../main/environment-manager.js";
 import {EvolutionManager} from "../main/evolution-manager.js";
 import {MockWindow} from "./mocks.js";
 import {pushParseString} from "../main/push.js";

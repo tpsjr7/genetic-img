@@ -28,7 +28,7 @@ export class EnvironmentManager {
   }
 
   createCanvases() {
-    if (this.canvases.length !== 0) {
+    if (this.canvases.length > 0) {
       throw new Error('already created');
     }
 
