@@ -953,25 +953,30 @@ export function pushInterpreter(canvasElem) {
 
   /// Canvas stuff
   if (canvasElem) {
+
     let canvas = new Canvas(canvasElem);
-    this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
+
+    this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
       if (inStack.length >= 2) {
         inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
         canvas.moveTo(inStack.pop(), inStack.pop());
       }
     });
-    this[ 'FLOAT.CV_FORWARD']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
-      if( inStack.length >= 1 ) {
+
+    this['FLOAT.CV_FORWARD'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
+      if (inStack.length >= 1) {
         inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
         canvas.forward(inStack.pop());
       }
     });
-    this[ 'FLOAT.CV_TURN']  = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
-      if( inStack.length >= 1 ) {
+
+    this['FLOAT.CV_TURN'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
+      if (inStack.length >= 1) {
         inInterpreter.executionCounts['FLOAT.CV_TURN']++;
         canvas.turn(inStack.pop());
       }
     });
+
   }
 
   this.randInstructions = getPushInstructionSet(this);

@@ -2,6 +2,7 @@ import {addTests, assertEquals, assertTrue} from "./asserts.js";
 import {EnvironmentManager} from "../main/evolve-canvas.js";
 import {EvolutionManager} from "../main/evolution-manager.js";
 import {MockWindow} from "./mocks.js";
+import {pushParseString} from "../main/push.js";
 
 addTests({
     testGetTopScoring() {
@@ -24,10 +25,13 @@ addTests({
        em.initPop();
        assertEquals(5, em.population.length);
        assertTrue(em.population[0].length > 0);
+       em.population[2] = pushParseString("( 1.1 1.1 FLOAT.CV_FORWARD FLOAT.CV_FORWARD )");
+       em.population[4] = pushParseString("( 1.1 FLOAT.CV_FORWARD )");
        em.scorePopulation((interpreter, program)=>{
            return interpreter.executionCounts['FLOAT.CV_FORWARD'];
        });
        let best = em.getTopScoring(2);
-       assertTrue(best[0].score >= 0);
+       assertEquals(2, best[0].score);
+       assertEquals(1, best[1].score);
    }
 });

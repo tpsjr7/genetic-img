@@ -1,4 +1,3 @@
-import "./push.js"
 import {pushInterpreter, pushRunProgram} from "./push.js";
 import {randomCode} from "./random-code.js";
 
