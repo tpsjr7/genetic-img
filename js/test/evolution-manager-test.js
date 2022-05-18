@@ -7,7 +7,7 @@ addTests({
     testGetTopScoring() {
         let window = new MockWindow();
         let environmentManager = new EnvironmentManager(window,4);
-        let em = new EvolutionManager({}, 5);
+        let em = new EvolutionManager(environmentManager, 5);
         em.scores = [
             {i: 0, score: 10},
             {i: 1, score: 15},

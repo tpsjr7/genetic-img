@@ -53,7 +53,7 @@ export function randIntRange(min, max, randFloatFunc) {
 }
 export function randomCodeWithSize(points, interpreter, randFloatFunc) {
   if (points < 1) throw "points must be > 0";
-  if (points == 1) {
+  if (points === 1) {
     let conf = interpreter.conf;
     if (randFloatFunc() < conf['RAND-CONST-PROB']) {
       // choose random constant
@@ -77,7 +77,7 @@ export function randomCodeWithSize(points, interpreter, randFloatFunc) {
       let inst = interpreter.randInstructions;
       return inst[interpreter.nextRandInt(inst.length)];
     }
-  } else if (points != 1) {
+  } else if (points !== 1) {
     /*
     Otherwise set SIZES-THIS-LEVEL to the result of DECOMPOSE
         called with both inputs (POINTS - 1). Return a list

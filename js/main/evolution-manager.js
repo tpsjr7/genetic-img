@@ -34,7 +34,7 @@ export class EvolutionManager {
         this.scores = [];
         for (let i = 0 ; i < n ; i++) {
             let pi = new pushInterpreter(this.environmentManager.getCanvasElem(i));
-            let prog = this.population[i].copy();
+            let prog = this.population[i];
             pushRunProgram(pi, prog);
             this.scores.push({
                 i: i,
