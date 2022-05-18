@@ -28,10 +28,10 @@ addTests({
        em.population[2] = pushParseString("( 1.1 1.1 FLOAT.CV_FORWARD FLOAT.CV_FORWARD )");
        em.population[4] = pushParseString("( 1.1 FLOAT.CV_FORWARD )");
        em.scorePopulation((interpreter, program)=>{
-           return interpreter.executionCounts['FLOAT.CV_FORWARD'];
+           return interpreter.stats.drawDistance;
        });
        let best = em.getTopScoring(2);
-       assertEquals(2, best[0].score);
-       assertEquals(1, best[1].score);
+       assertEquals(2.2, best[0].score);
+       assertEquals(1.1, best[1].score);
    }
 });

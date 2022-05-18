@@ -23,13 +23,21 @@
 
     ev.initPop();
     ev.scorePopulation((interpreter, program)=>{
-        return interpreter.executionCounts['FLOAT.CV_FORWARD'];
+        // return interpreter.executionCounts['FLOAT.CV_FORWARD'];
+        return interpreter.stats.drawDistance;
     });
     let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
     if ( goodOnes.length > 0) {
         console.log('found');
-
-        console.log(goodOnes.map(it => ev.population[it.i].toString()));
+        console.log
+        (goodOnes.map(
+            it => {
+                return {
+                    prog: ev.population[it.i].toString(),
+                    score: it.score
+                }
+            }
+        ));
     }
   </script>
 </body>

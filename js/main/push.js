@@ -690,6 +690,9 @@ export function pushInterpreter(canvasElem) {
     'MAX-POINTS-IN-RANDOM-EXPRESSIONS': 25
   };
 
+  this.stats = {
+    drawDistance: 0
+  };
 
   this.intStack.push = function( inValue ) {
       this.parentpush = Array.prototype.push;
@@ -967,7 +970,9 @@ export function pushInterpreter(canvasElem) {
     this['FLOAT.CV_FORWARD'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
       if (inStack.length >= 1) {
         inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
-        canvas.forward(inStack.pop());
+        let val = inStack.pop();
+        inInterpreter.stats.drawDistance += val;
+        canvas.forward(val);
       }
     });
 
@@ -1031,9 +1036,12 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
 
     inInterpreter._effort++;
 
-    if( inInterpreter._effort > 1000 ) {
-      inInterpreter._errorMessage = "Hardcoded effort limit reached (1000 instructions)";
+    const limit = 1000;
+    if( inInterpreter._effort > limit ) {
+      inInterpreter._errorMessage = `Hardcoded effort limit reached (${limit} instructions)`;
       inInterpreter._error = 1;
+      console.log(inProgramArray.toString());
+      // throw new Error(inInterpreter._errorMessage);
       return -1;
     }
   }
