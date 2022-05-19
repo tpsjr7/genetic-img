@@ -9,6 +9,7 @@ import {
 import {getPushInstructionSet, pushInterpreter, pushParseString, pushRunProgram} from "../main/push.js";
 import {MockCanvasElement} from "./mocks.js";
 import {decompose, randomCode, randomCodeWithSize} from "../main/random-code.js";
+import {PushArray} from "../main/push-array.js";
 
 addTests({
   testAssertEquals() {
@@ -36,6 +37,96 @@ addTests({
     assertThrows(() => {
       assertEquals('true', true);
     });
+  },
+  testStackLengthCount() {
+    let stack = new PushArray();
+    assertEquals(1, stack.count);
+
+    assertEquals(undefined, stack.pop());
+    assertEquals(1, stack.count);
+
+    stack.push(1); // [1]
+    assertEquals(2, stack.count);
+
+    let s2 = new PushArray();
+    s2.push(1);
+    s2.push(2);
+    stack.push(s2); // [1, [1, 2]]
+    assertEquals(5, stack.count);
+
+    stack.push(new PushArray()); // [1, [1, 2], []]
+    assertEquals(6, stack.count);
+
+    stack.pop(); //[1, [1, 2] ]
+    assertEquals(5, stack.count);
+
+    stack.pop(); //[1]
+    assertEquals(2, stack.count);
+
+    stack.pop(); //[]
+    assertEquals(1, stack.count);
+
+    stack.pop(); //[]
+    assertEquals(1, stack.count);
+
+    let s3 = new PushArray();
+    s3.push(1);
+    s3.push(1);
+    stack.push(s3); //[[1,1]]
+    assertEquals(4, stack.count);
+
+    stack.pop(); // []
+    assertEquals(1, stack.count);
+
+    stack.pop(); // []
+    assertEquals(1, stack.count);
+
+  },
+  testParentStackCount() {
+    let a1 = new PushArray();
+    a1.push(1);
+    a1.push(2); // [1, 2]
+    assertEquals(3, a1.count);
+
+    let a2 = new PushArray();
+    a2.push(3);
+    a2.push(4); // [3, 4]
+
+    a1.push(a2); // [1, 2, [3, 4]]
+    assertEquals(6, a1.count);
+    assertTrue(a1 === a2.parent );
+
+    a2.push(5); // [1, 2, [3, 4, 5]]
+
+    assertEquals(4, a2.count);
+    assertEquals(7, a1.count);
+
+    a2.pop(); // [1, 2, [3, 4]]
+    assertEquals(3, a2.count);
+    assertEquals(6, a1.count);
+
+    a1.pop(); // [1, 2]
+    assertEquals(3, a2.count);
+    assertEquals(3, a1.count);
+    assertTrue(a2.parent !== a1);
+    assertTrue(a2.parent == null);
+
+  },
+  testStackLengthCountWithParse() {
+    let p1 = pushParseString('( 1 1 )');
+    assertEquals(3, p1.count);
+
+    let p2 = pushParseString('( 2 2 ( 2 ) )');
+    assertEquals(5, p2.count);
+
+    p1.push(p2);
+    assertEquals('( 1 1 ( 2 2 ( 2 ) ) )', p1.toString());
+
+    assertEquals(8, p1.count);
+    p1.pop();
+
+    assertEquals('( 1 1 )', p1.toString());
+    assertEquals(3, p1.count);
   },
   testMakeRanSeq() {
     let rand = makeRandomSeq([4,3,7]);
@@ -179,12 +270,29 @@ addTests({
   },
   testExecutionCounts() {
     let pi = new pushInterpreter(new MockCanvasElement());
-    pi.floatStack.push(...[1, 1, 1, 1, 3, 5]);
+    for (let v of [1, 1, 1, 1, 3, 5]) {
+      pi.floatStack.push(v);
+    }
     let program = pushParseString('(FLOAT.CV_MOVE_TO FLOAT.CV_FORWARD FLOAT.CV_TURN FLOAT.CV_MOVE_TO)' );
     pushRunProgram(pi, program);
     assertEquals(2, pi.executionCounts['FLOAT.CV_MOVE_TO']);
     assertEquals(1, pi.executionCounts['FLOAT.CV_FORWARD']);
     assertEquals(1, pi.executionCounts['FLOAT.CV_TURN']);
+  },
+  testPushArray() {
+    let pa = new PushArray();
+    pa.push(3);
+    assertEquals(1, pa.length);
+    assertEquals(3, pa[0]);
+  },
+  testInfiniteLoopBug() {
+    let bad ='( NAME.RAND ( INTEGER.FLUSH ( EXEC.IF ( FLOAT.ROT ) CODE.DUP ) ( CODE.IF CODE.LIST ) ( EXEC.K ) ( CODE.QUOTE ) ) ( EXEC.POP ) ( FLOAT.% ) CODE.DO )';
+    let program = pushParseString(bad);
+    let pi = new pushInterpreter(new MockCanvasElement());
+    assertThrows(()=>{
+      pushRunProgram(pi, program);
+    }, 'stack limit')
+
   }
 });
 

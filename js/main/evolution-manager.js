@@ -29,6 +29,7 @@ export class EvolutionManager {
     }
 
     scorePopulation(scoreCb) {
+        let now = new Date().getTime();
         let n = this.conf.popSize;
         this.scores = [];
         for (let i = 0 ; i < n ; i++) {
@@ -37,9 +38,10 @@ export class EvolutionManager {
             pushRunProgram(pi, prog);
             this.scores.push({
                 i: i,
-                score: scoreCb(pi, prog)
+                score: scoreCb(pi, prog, i)
             });
         }
+        console.log(new Date().getTime() - now);
     }
 
     getTopScoring(n) {

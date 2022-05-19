@@ -27,6 +27,7 @@
 
 import {Canvas} from "./push-canvas.js";
 import {randomCode} from "./random-code.js";
+import {PushArray} from "./push-array.js";
 
 String.prototype.equals = function(inOther ) {
   return inOther == this;
@@ -51,7 +52,7 @@ Array.prototype.toString = function() {
 }
 
 Array.prototype.copy = function() {
-  var newCopy = new Array();
+  var newCopy = new PushArray();
 
   for( var i = 0; i < this.length; i++ ) {
     if( isPushProgram( this[ i ] ) )
@@ -262,7 +263,7 @@ function pushInstructionCdr( inInterpreter, inStack ) {
       top.shift();
       inStack.push( top );
     } else {
-      inStack.push( new Array() );
+      inStack.push( new PushArray() );
     }
   }
 }
@@ -301,7 +302,7 @@ function pushInstructionList( inInterpreter, inStack ) {
   if( inStack.length > 1 ) {
     var o1 = inStack.pop();
     var o2 = inStack.pop();
-    var newCode = new Array();
+    var newCode = new PushArray();
 
     newCode.push( o2 );
     newCode.push( o1 );
@@ -316,7 +317,7 @@ function pushInstructionCons( inInterpreter, inStack ) {
     var car = inStack.pop();
 
     if( !isPushProgram( cdr ) ) {
-      var program = new Array();
+      var program = new PushArray();
       program.push( cdr );
       cdr = program;
     }
@@ -347,7 +348,7 @@ function pushInstructionDoCount( inInterpreter, inStack ) {
     if( count < 1 ) return;
 
     var code = inStack.pop();
-    var program = new Array();
+    var program = new PushArray();
 
     program.push( new pushInt( 0 ) );
     program.push( new pushInt( count - 1 ) );
@@ -363,7 +364,7 @@ function pushInstructionDoTimes( inInterpreter, inStack ) {
     var code = inStack.pop();
 
     if( !isPushProgram( code ) ) {
-      var program = new Array();
+      var program = new PushArray();
       program.push( code );
       code = program;
     }
@@ -440,7 +441,7 @@ function pushInstructionS( inInterpreter, inStack ) {
       var b = inStack.pop();
       var c = inStack.pop();
 
-      var list = new Array();
+      var list = new PushArray();
 
       list.push( b );
       list.push( c );
@@ -454,7 +455,7 @@ function pushInstructionS( inInterpreter, inStack ) {
 function pushInstructionY( inInterpreter, inStack ) {
   if( inStack.length > 0 ) {
       var top = inStack.pop();
-      var list = new Array();
+      var list = new PushArray();
 
       list.push( "EXEC.Y" );
       list.push( top );
@@ -672,12 +673,12 @@ export function pushInterpreter(canvasElem) {
   }
   this.executionCounts = {};
 
-  this.floatStack = [];
-  this.execStack = [];
-  this.codeStack = [];
-  this.intStack = [];
-  this.boolStack = [];
-  this.nameStack = [];
+  this.floatStack = new PushArray();
+  this.execStack = new PushArray();
+  this.codeStack = new PushArray();
+  this.intStack = new PushArray();
+  this.boolStack = new PushArray();
+  this.nameStack = new PushArray();
 
   this._nameCounter = 0;
 
@@ -687,7 +688,9 @@ export function pushInterpreter(canvasElem) {
     'MAX-RANDOM-FLOAT': 10.0,
     'MAX-RANDOM-INTEGER': 10,
     'MIN-RANDOM-INTEGER': -10,
-    'MAX-POINTS-IN-RANDOM-EXPRESSIONS': 25
+    'MAX-POINTS-IN-RANDOM-EXPRESSIONS': 25,
+    'STACK-SIZE-LIMIT': 2000,
+    'EFFORT-LIMIT': 500,
   };
 
   this.stats = {
@@ -695,17 +698,17 @@ export function pushInterpreter(canvasElem) {
   };
 
   this.intStack.push = function( inValue ) {
-      this.parentpush = Array.prototype.push;
+      this.parentpush = PushArray.prototype.push;
       this.parentpush( parseInt( inValue ) );
   };
 
   this.boolStack.push = function( inValue ) {
-      this.parentpush = Array.prototype.push;
+      this.parentpush = PushArray.prototype.push;
       this.parentpush( inValue != 0 );
   };
 
   this.codeStack.push = function( inValue ) {
-      this.parentpush = Array.prototype.push;
+      this.parentpush = PushArray.prototype.push;
 
       if( isPushProgram( inValue ) ) inValue = inValue.copy();
 
@@ -713,7 +716,7 @@ export function pushInterpreter(canvasElem) {
   };
 
   this.execStack.push = function( inValue ) {
-      this.parentpush = Array.prototype.push;
+      this.parentpush = PushArray.prototype.push;
 
       if( isPushProgram( inValue ) ) inValue = inValue.copy();
 
@@ -995,6 +998,7 @@ export function pushInterpreter(canvasElem) {
  * @return 0 upon success, or -1 on error.
  */
 export function pushRunProgram( inInterpreter, inProgramArray ) {
+  console.log('running', inProgramArray.toString());
   var atom;
 
   inInterpreter.executionCounts = {};
@@ -1006,6 +1010,9 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
 
   inInterpreter.codeStack.push( inProgramArray );
   inInterpreter.execStack.push( inProgramArray );
+
+  const stackLimit = inInterpreter.conf['STACK-SIZE-LIMIT'];
+  const effortLimit = inInterpreter.conf['EFFORT-LIMIT'];
 
   while( inInterpreter.execStack.length > 0 ) {
 
@@ -1034,11 +1041,25 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
       }
     }
 
-    inInterpreter._effort++;
+    console.log(inInterpreter._effort++);
 
-    const limit = 1000;
-    if( inInterpreter._effort > limit ) {
-      inInterpreter._errorMessage = `Hardcoded effort limit reached (${limit} instructions)`;
+    console.log("code stack: " + inInterpreter.codeStack.count);
+    if (inInterpreter.codeStack.count > stackLimit ||
+        inInterpreter.execStack.count > stackLimit ||
+        inInterpreter.intStack.count > stackLimit ||
+        inInterpreter.floatStack.count > stackLimit ||
+        inInterpreter.boolStack.count > stackLimit ||
+        inInterpreter.nameStack.count > stackLimit
+    ) {
+        inInterpreter._errorMessage = `Stack limit reached`;
+        inInterpreter._error = 1;
+        throw new Error("stack limit");
+        return -1;
+    }
+
+
+    if( inInterpreter._effort > effortLimit ) {
+      inInterpreter._errorMessage = `Hardcoded effort limit reached (${effortLimit} instructions)`;
       inInterpreter._error = 1;
       console.log(inProgramArray.toString());
       // throw new Error(inInterpreter._errorMessage);
@@ -1087,7 +1108,7 @@ export function pushParseString( inString ) {
 
   var tokens = inString.split( ' ' );
 
-  var listStack = new Array();
+  var listStack = new PushArray();
 
   var currentList = null;
   var lastList = null;
@@ -1101,7 +1122,7 @@ export function pushParseString( inString ) {
 
       if( tokens[ i ] == '(' ) {        // Push
 
-        listStack.push( new Array() );
+        listStack.push( new PushArray() );
         currentList = listStack[ listStack.length - 1 ];
 
       } else if( tokens[ i ] == ')' ) {    // Pop
@@ -1156,6 +1177,7 @@ export function pushParseString( inString ) {
 
 export function pushRunString( inProgram, canvasElem ) {
   var program = pushParseString( inProgram );
+
   var interpreter = new pushInterpreter(canvasElem);
 
   var info = pushRunProgram( interpreter, program )

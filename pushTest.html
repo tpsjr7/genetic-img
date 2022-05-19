@@ -1,5 +1,6 @@
 <html>
 <body>
+  <script type='module' src='js/main/push-array.js'></script>
   <script type='module' src='js/main/push.js'></script>
   <script type='module' src='js/main/random-code.js'></script>
   <script type='module' src='js/main/environment-manager.js'></script>
@@ -7,12 +8,15 @@
   <script type='module' src='js/main/evolution-manager.js'></script>
   <script type='module' src='js/test/asserts.js'></script>
   <script type='module' src='js/test/mocks.js'></script>
+  <script type='module' src='js/test/push-test.js'></script>
   <script type='module' src='js/test/evolve-canvas-test.js'></script>
   <script type='module' src='js/test/evolution-manager-test.js'></script>
-  <script type='module' src='js/test/push-test.js'></script>
   <script type='module'>
     import {runTests} from "./js/test/asserts.js";
-    window.logState = false;
+    window.logState = function logState(inInterpreter, message){
+      console.log(message);
+      console.log(inInterpreter.toString());
+    }
     runTests();
   </script>
 </body>

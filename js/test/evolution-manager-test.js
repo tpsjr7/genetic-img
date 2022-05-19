@@ -27,7 +27,8 @@ addTests({
        assertTrue(em.population[0].length > 0);
        em.population[2] = pushParseString("( 1.1 1.1 FLOAT.CV_FORWARD FLOAT.CV_FORWARD )");
        em.population[4] = pushParseString("( 1.1 FLOAT.CV_FORWARD )");
-       em.scorePopulation((interpreter, program)=>{
+       em.scorePopulation((interpreter, program, index)=>{
+           assertTrue(typeof index !== 'undefined');
            return interpreter.stats.drawDistance;
        });
        let best = em.getTopScoring(2);
