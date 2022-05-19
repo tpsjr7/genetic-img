@@ -59,11 +59,14 @@ export function assertTrue(expression) {
   }
 }
 
-export function assertThrows(code) {
+export function assertThrows(code, expectedErrMessage) {
   try {
     code();
 
   } catch (e) {
+    if (expectedErrMessage) {
+      assertEquals(expectedErrMessage, e.message);
+    }
     return;
   }
   throw new Error("Fail, didn't throw as expected");
