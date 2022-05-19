@@ -689,8 +689,8 @@ export function pushInterpreter(canvasElem) {
     'MAX-RANDOM-INTEGER': 10,
     'MIN-RANDOM-INTEGER': -10,
     'MAX-POINTS-IN-RANDOM-EXPRESSIONS': 25,
-    'STACK-SIZE-LIMIT': 2000,
-    'EFFORT-LIMIT': 500,
+    'STACK-SIZE-LIMIT': 500,
+    'EFFORT-LIMIT': 1000,
   };
 
   this.stats = {
@@ -1041,9 +1041,9 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
       }
     }
 
-    console.log(inInterpreter._effort++);
+    // console.log(inInterpreter._effort++);
+    // console.log("code stack: " + inInterpreter.codeStack.count);
 
-    console.log("code stack: " + inInterpreter.codeStack.count);
     if (inInterpreter.codeStack.count > stackLimit ||
         inInterpreter.execStack.count > stackLimit ||
         inInterpreter.intStack.count > stackLimit ||
@@ -1051,9 +1051,8 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
         inInterpreter.boolStack.count > stackLimit ||
         inInterpreter.nameStack.count > stackLimit
     ) {
-        inInterpreter._errorMessage = `Stack limit reached`;
-        inInterpreter._error = 1;
-        throw new Error("stack limit");
+        inInterpreter._errorMessage = `Stack size limit reached`;
+        inInterpreter._error = 2;
         return -1;
     }
 

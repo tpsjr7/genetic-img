@@ -289,10 +289,15 @@ addTests({
     let bad ='( NAME.RAND ( INTEGER.FLUSH ( EXEC.IF ( FLOAT.ROT ) CODE.DUP ) ( CODE.IF CODE.LIST ) ( EXEC.K ) ( CODE.QUOTE ) ) ( EXEC.POP ) ( FLOAT.% ) CODE.DO )';
     let program = pushParseString(bad);
     let pi = new pushInterpreter(new MockCanvasElement());
-    assertThrows(()=>{
-      pushRunProgram(pi, program);
-    }, 'stack limit')
-
+    let ret = pushRunProgram(pi, program);
+    assertEquals(-1, ret);
+    assertEquals(2,  pi._error);
+  },
+  testInvalidStateBug() {
+    let bad = '( NAME.YANKDUP EXEC.DO*COUNT ( EXEC.STACKDEPTH FLOAT.SWAP ( -3 ) ( CODE.NULL ( ( INTEGER.YANKDUP ( FLOAT.DUP ) ) ( NAME.STACKDEPTH EXEC.SHOVE ) FLOAT.SWAP ) ( FLOAT.CV_MOVE_TO ) ( INTEGER.RAND ) FLOAT.DUP ) ) CODE.FLUSH )';
+    let program = pushParseString(bad);
+    let pi = new pushInterpreter(new MockCanvasElement());
+    let ret = pushRunProgram(pi, program);
   }
 });
 
