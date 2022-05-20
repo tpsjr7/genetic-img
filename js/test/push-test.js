@@ -82,8 +82,6 @@ addTests({
 
     assertEquals('( ( 1 ( 2 ) ) 3 )', a.toString());
     assertEquals(6, a.count);
-
-
   },
   testStackLengthCount() {
     let stack = new PushArray();
@@ -174,6 +172,24 @@ addTests({
 
     assertEquals('( 1 1 )', p1.toString());
     assertEquals(3, p1.count);
+  },
+  testSpliceWithReplace() {
+    let a = pushParseString('( ( 1 ( 2 4 7 8 ) ) 3 )');
+
+    let b = pushParseString('( 5 5 5 )');
+
+    let c = pushParseString('( 6 6 6 )');
+
+    let d =  a[0][1];
+    assertEquals('( 2 4 7 8 )', d.toString());
+
+    let e = a[0][1].splice(1, 2, b, c);
+    assertEquals('( 2 ( 5 5 5 ) ( 6 6 6 ) 8 )', d.toString());
+    assertEquals(11, d.count);
+
+    assertEquals('( ( 1 ( 2 ( 5 5 5 ) ( 6 6 6 ) 8 ) ) 3 )', a.toString());
+    assertEquals(15, a.count);
+
   },
   testMakeRanSeq() {
     let rand = makeRandomSeq([4,3,7]);
@@ -340,14 +356,12 @@ addTests({
     assertEquals(-1, ret);
     assertEquals(2,  pi._error);
   },
-
-  // testInvalidStateBug() {
-  //   let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
-  //
-  //   let program = pushParseString(bad);
-  //   let pi = new pushInterpreter(new MockCanvasElement());
-  //   let ret = pushRunProgram(pi, program);
-  // }
+  testInvalidStateBug() {
+    let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
+    let program = pushParseString(bad);
+    let pi = new pushInterpreter(new MockCanvasElement());
+    let ret = pushRunProgram(pi, program);
+  }
 });
 
 //this[ 'FLOAT.FROMINTEGER' ] = new pushInstruction( this.floatStack, pushInstructionFromInteger );

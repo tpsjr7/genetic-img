@@ -10,14 +10,32 @@ export class PushArray extends Array {
         }
     }
 
-    splice(start, deleteCount, replace) {
-        let myCountbefore = this.count;
+    _acceptPushedValue(val) {
+        let added = 0;
+        if (Array.isArray(val)) {
+            if (val.count) {
+                added = val.count;
+                val.parent = this;
+            } else {
+                throw new Error("must be pusharray");
+                // this.count += (val.length + 1);
+            }
+        } else {
+            added = 1;
+        }
+        return added;
+    }
+    splice(start, deleteCount, ...replace) {
+        let myCountBefore = this.count;
+        let added = 0;
         let ret;
         if (typeof replace === "undefined") {
             ret = super.splice(start, deleteCount);
         } else {
-            // ret = super.splice(start, deleteCount, replace);
-            throw new Error("not implemented")
+            ret = super.splice(start, deleteCount, ...replace);
+            for (let item of replace) {
+                added += this._acceptPushedValue(item);
+            }
         }
 
         ret.count = 1;
@@ -33,8 +51,8 @@ export class PushArray extends Array {
                 ret.count++;
             }
         }
-        let diff = (ret.count - 1);
-        this.count = myCountbefore - diff;
+        let diff = (ret.count - 1 - added);
+        this.count = myCountBefore - diff;
 
         this._propagate(diff);
 
@@ -70,19 +88,7 @@ export class PushArray extends Array {
     }
 
     push(val){
-        let added = 0;
-        if (Array.isArray(val)) {
-            if (val.count) {
-                added = val.count;
-                val.parent = this;
-            } else {
-                throw new Error("must be pusharray");
-                // this.count += (val.length + 1);
-            }
-        } else {
-            added = 1;
-        }
-
+        let added = this._acceptPushedValue(val);
         this.count += added;
 
         let myParent = this.parent;
