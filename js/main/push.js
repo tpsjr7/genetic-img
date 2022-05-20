@@ -553,6 +553,12 @@ function pushInstructionDivide( inInterpreter, inStack ) {
 function pushInstructionModulus( inInterpreter, inStack ) {
   if( inStack.length > 1 ) {
     var o1 = inStack.pop();
+
+    if( o1 == 0.0 ) { // oops!  protect the divide and return;
+      inStack.push( o1 );
+      return;
+    }
+
     var o2 = inStack.pop();
     inStack.push( o2 % o1 );
   }
