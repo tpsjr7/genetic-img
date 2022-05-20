@@ -1041,7 +1041,9 @@ export function pushRunProgram( inInterpreter, inProgramArray ) {
       }
     }
 
-    // console.log(inInterpreter._effort++);
+
+    inInterpreter._effort++;
+    // console.log(inInterpreter._effort);
     // console.log("code stack: " + inInterpreter.codeStack.count);
 
     if (inInterpreter.codeStack.count > stackLimit ||
@@ -1167,6 +1169,8 @@ export function pushParseString( inString ) {
 
   return lastList;
 }
+
+window.pushParseString = pushParseString;
 
 /**
  * Parses a string into a program and executes the program with a new interpreter

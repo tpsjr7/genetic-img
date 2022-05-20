@@ -361,6 +361,14 @@ addTests({
     let program = pushParseString(bad);
     let pi = new pushInterpreter(new MockCanvasElement());
     let ret = pushRunProgram(pi, program);
+  },
+  testExecDupBug() {
+    let bad;
+    bad = '( EXEC.DUP EXEC.DUP )';
+    let program = pushParseString(bad);
+    let pi = new pushInterpreter(new MockCanvasElement());
+    let ret = pushRunProgram(pi, program);
+    assertEquals(1,  pi._error);
   }
 });
 
