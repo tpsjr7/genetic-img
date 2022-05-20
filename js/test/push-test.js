@@ -38,6 +38,38 @@ addTests({
       assertEquals('true', true);
     });
   },
+  testSplice() {
+    let a, b;
+    a = pushParseString('( 1 2 3 )');
+    b = a.splice(0, 1);
+    assertEquals('( 1 )', b.toString());
+    assertEquals(2, b.count);
+
+    assertEquals('( 2 3 )', a.toString());
+    assertEquals(3, a.count);
+
+    a = pushParseString('( ( 1 2 ) 3 )');
+    assertEquals(5, a.count);
+
+    b = a.splice(0, 1);
+    assertEquals('( ( 1 2 ) )', b.toString());
+    assertEquals(4, b.count);
+    assertTrue(b.parent == null);
+
+    assertEquals('( 3 )', a.toString());
+    assertEquals(2, a.count);
+
+    a = pushParseString('( ( 1 2 ) 3 )');
+    b = a.splice(0, 2);
+
+    assertEquals('( ( 1 2 ) 3 )', b.toString());
+    assertEquals(5, b.count);
+
+    assertEquals('( )', a.toString());
+    assertEquals(1, a.count);
+
+
+  },
   testStackLengthCount() {
     let stack = new PushArray();
     assertEquals(1, stack.count);
@@ -293,8 +325,10 @@ addTests({
     assertEquals(-1, ret);
     assertEquals(2,  pi._error);
   },
+
   testInvalidStateBug() {
-    let bad = '( NAME.YANKDUP EXEC.DO*COUNT ( EXEC.STACKDEPTH FLOAT.SWAP ( -3 ) ( CODE.NULL ( ( INTEGER.YANKDUP ( FLOAT.DUP ) ) ( NAME.STACKDEPTH EXEC.SHOVE ) FLOAT.SWAP ) ( FLOAT.CV_MOVE_TO ) ( INTEGER.RAND ) FLOAT.DUP ) ) CODE.FLUSH )';
+    let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
+
     let program = pushParseString(bad);
     let pi = new pushInterpreter(new MockCanvasElement());
     let ret = pushRunProgram(pi, program);

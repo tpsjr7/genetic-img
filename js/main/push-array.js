@@ -1,6 +1,32 @@
 export class PushArray extends Array {
 
     count = 1;
+    splice(start, deleteCount, replace) {
+        let myCountbefore = this.count;
+        let ret;
+        if (typeof replace === "undefined") {
+            ret = super.splice(start, deleteCount);
+        } else {
+            // ret = super.splice(start, deleteCount, replace);
+            throw new Error("not implemented")
+        }
+
+        ret.count = 1;
+        ret.parent = null;
+        for (let item of ret) {
+            if (Array.isArray(item)) {
+                if (item.count == null) {
+                    throw new Error("should be push array");
+                }
+                ret.count += item.count;
+                item.parent = ret;
+            } else {
+                ret.count++;
+            }
+        }
+        this.count = myCountbefore - (ret.count - 1);
+        return ret;
+    }
     pop(){
         if (this.length === 0) {
             return undefined;
