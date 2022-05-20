@@ -1004,6 +1004,17 @@ export function pushInterpreter(canvasElem) {
  * @return 0 upon success, or -1 on error.
  */
 export function pushRunProgram( inInterpreter, inProgramArray ) {
+  try {
+    return _pushRunProgramHelper(inInterpreter, inProgramArray);
+  } catch (e) {
+    console.error(e);
+    alert('error');
+    debugger;
+    throw e;
+  }
+}
+
+function _pushRunProgramHelper( inInterpreter, inProgramArray ) {
   console.log('running', inProgramArray.toString());
   var atom;
 
