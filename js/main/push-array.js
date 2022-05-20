@@ -1,6 +1,15 @@
 export class PushArray extends Array {
 
     count = 1;
+
+    _propagate(diff) {
+        let myParent = this.parent;
+        while (myParent != null) {
+            myParent.count -= diff;
+            myParent = myParent.parent;
+        }
+    }
+
     splice(start, deleteCount, replace) {
         let myCountbefore = this.count;
         let ret;
@@ -24,7 +33,11 @@ export class PushArray extends Array {
                 ret.count++;
             }
         }
-        this.count = myCountbefore - (ret.count - 1);
+        let diff = (ret.count - 1);
+        this.count = myCountbefore - diff;
+
+        this._propagate(diff);
+
         return ret;
     }
     pop(){
@@ -47,11 +60,7 @@ export class PushArray extends Array {
         }
         this.count -= subtracted;
 
-        let myParent = this.parent;
-        while (myParent != null) {
-            myParent.count -= subtracted;
-            myParent = myParent.parent;
-        }
+        this._propagate(subtracted);
 
         if ( this.count < 1) {
             debugger;

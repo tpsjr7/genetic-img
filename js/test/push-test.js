@@ -69,6 +69,21 @@ addTests({
     assertEquals(1, a.count);
 
 
+    a = pushParseString('( ( 1 ( 2 4 ) ) 3 )');
+    assertEquals(7, a.count);
+
+    b = a[0][1];
+    assertEquals('( 2 4 )', b.toString());
+    assertEquals(3, b.count);
+
+    let c = b.splice(1, 1);
+    assertEquals('( 4 )', c.toString());
+    assertEquals(2, c.count);
+
+    assertEquals('( ( 1 ( 2 ) ) 3 )', a.toString());
+    assertEquals(6, a.count);
+
+
   },
   testStackLengthCount() {
     let stack = new PushArray();
@@ -326,13 +341,13 @@ addTests({
     assertEquals(2,  pi._error);
   },
 
-  testInvalidStateBug() {
-    let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
-
-    let program = pushParseString(bad);
-    let pi = new pushInterpreter(new MockCanvasElement());
-    let ret = pushRunProgram(pi, program);
-  }
+  // testInvalidStateBug() {
+  //   let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
+  //
+  //   let program = pushParseString(bad);
+  //   let pi = new pushInterpreter(new MockCanvasElement());
+  //   let ret = pushRunProgram(pi, program);
+  // }
 });
 
 //this[ 'FLOAT.FROMINTEGER' ] = new pushInstruction( this.floatStack, pushInstructionFromInteger );
