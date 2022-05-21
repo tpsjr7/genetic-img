@@ -1,20 +1,7 @@
 import {EnvironmentManager} from './environment-manager.js';
 import {EvolutionManager} from './evolution-manager.js';
 
-let em = new EnvironmentManager(window, 100);
-let ev = new EvolutionManager(em, 100);
-
-window.em = em;
-window.ev = ev;
-
-window.addEventListener('resize', ()=>{
-    em.positionCanvases()
-});
-
-ev.initPop();
-ev.scorePopulation((interpreter, program, index)=>{
-    return interpreter.executionCounts['FLOAT.CV_FORWARD'];
-    // if (true) return 0;
+function pixelDistance(index) {
     let ce = em.getCanvasElem(index);
     let context = ce.getContext('2d');
     let {width, height} = ce;
@@ -24,18 +11,41 @@ ev.scorePopulation((interpreter, program, index)=>{
         sum += data[i];
     }
     return sum;
-    // return interpreter.stats.drawDistance;
-});
-let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
-if ( goodOnes.length > 0) {
-    console.log('found');
-    console.log
-    (goodOnes.map(
-        it => {
-            return {
-                prog: ev.population[it.i].toString(),
-                score: it.score
-            }
-        }
-    ));
 }
+
+function main() {
+    let em = new EnvironmentManager(window, 100);
+    let ev = new EvolutionManager(em, 100);
+
+    window.em = em;
+    window.ev = ev;
+
+    window.addEventListener('resize', ()=>{
+        em.positionCanvases()
+    });
+
+    ev.initPop();
+
+    ev.scorePopulation((interpreter, program, index)=>{
+        // return interpreter.executionCounts['FLOAT.CV_FORWARD'];
+        let dist = interpreter.stats.drawDistance;
+        return dist;
+    });
+
+    let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
+    if ( goodOnes.length > 0) {
+        console.log('found');
+        console.log
+        (goodOnes.map(
+            it => {
+                return {
+                    prog: ev.population[it.i].toString(),
+                    score: it.score
+                }
+            }
+        ));
+    }
+
+}
+
+main();
