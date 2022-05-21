@@ -88,7 +88,14 @@ export function addTests(someTests) {
 export function runTests() {
   try {
     let count = 0;
-    for (let test of Object.keys(tests)) {
+    let keys = Object.keys(tests);
+    let focused = keys.filter(it => it.startsWith("focus_"));
+
+    let keysToRun = keys;
+    if (focused.length > 0) {
+      keysToRun = focused;
+    }
+    for (let test of keysToRun) {
       count++;
       console.log('Running ' + test);
       tests[test]();
