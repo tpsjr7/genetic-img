@@ -2,6 +2,10 @@ export class EnvironmentManager {
   canvases = [];
   nCanvases;
   window;
+
+  DRAW_WIDTH = 200; // when drawing, how many pixels vs how big it looks on screen
+  DRAW_HEIGHT = 200;
+
   constructor(window, nCanvases) {
     this.window = window;
     this.nCanvases = nCanvases;
@@ -14,7 +18,7 @@ export class EnvironmentManager {
     let col = index % cols;
     let row = Math.floor(index / cols);
     return {
-      width: width,
+      width: width, // how wide it looks on screen
       height: height,
       x: col * width,
       y: row * height
@@ -44,6 +48,8 @@ export class EnvironmentManager {
     for (let i = 0 ; i < this.canvases.length; i++) {
       let pos = this.calcPositionForCanvas(i);
       let canvas = this.canvases[i];
+      canvas.width = this.DRAW_WIDTH;
+      canvas.height = this.DRAW_HEIGHT;
       canvas.style.border = 'solid 1px black';
       canvas.style.position = 'absolute';
       canvas.style.left = pos.x + 'px';

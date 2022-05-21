@@ -333,7 +333,7 @@ addTests({
   },
   testExecutionCounts() {
     let pi = new pushInterpreter(new MockCanvasElement());
-    for (let v of [1, 1, 1, 1, 3, 5]) {
+    for (let v of [1, 1, 1, 2.5, 3, 5]) {
       pi.floatStack.push(v);
     }
     let program = pushParseString('(FLOAT.CV_MOVE_TO FLOAT.CV_FORWARD FLOAT.CV_TURN FLOAT.CV_MOVE_TO)' );
@@ -341,6 +341,7 @@ addTests({
     assertEquals(2, pi.executionCounts['FLOAT.CV_MOVE_TO']);
     assertEquals(1, pi.executionCounts['FLOAT.CV_FORWARD']);
     assertEquals(1, pi.executionCounts['FLOAT.CV_TURN']);
+    assertEquals(2.5, pi.stats.drawDistance);
   },
   testPushArray() {
     let pa = new PushArray();

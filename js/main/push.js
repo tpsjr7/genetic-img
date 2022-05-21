@@ -967,21 +967,30 @@ export function pushInterpreter(canvasElem) {
   if (canvasElem) {
 
     let canvas = new Canvas(canvasElem)
-    canvas.moveTo(0, 0);
+    canvas.moveTo(0.5, 0.5);
 
     this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
       if (inStack.length >= 2) {
-        inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
-        canvas.moveTo(inStack.pop(), inStack.pop());
+        let a = inStack.pop();
+        let b = inStack.pop();
+        if (canvas.moveTo(a, b)) {
+          inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
+        } else {
+          inStack.push(b);
+          inStack.push(a);
+        }
       }
     });
 
     this['FLOAT.CV_FORWARD'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
       if (inStack.length >= 1) {
-        inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
         let val = inStack.pop();
-        inInterpreter.stats.drawDistance += val;
-        canvas.forward(val);
+        if (canvas.forward(val)){
+          inInterpreter.stats.drawDistance += canvas.lastDrawDistance;
+          inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
+        } else {
+          inStack.push(val);
+        }
       }
     });
 
