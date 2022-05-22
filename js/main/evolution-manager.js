@@ -1,4 +1,4 @@
-import {pushInterpreter, pushRunProgram} from "./push.js";
+import {pushInterpreter, pushParseString, pushRunProgram} from "./push.js";
 import {randomCode} from "./random-code.js";
 
 export class EvolutionManager {
@@ -9,12 +9,28 @@ export class EvolutionManager {
     }
     environmentManager;
     scores = [];
+    maxScoreObj;
+
+    purgePercent = 0.20;
+    elitePercent = 0.05;
+
     constructor(environmentManager, popSize) {
         if (!environmentManager) throw new Error("missing window");
         if (!(popSize > 0)) throw new Error("invalid population size");
 
         this.environmentManager = environmentManager;
         this.conf.popSize = popSize;
+    }
+
+    _findMaxScore() {
+        let maxScoreObj = this.scores[0];
+        for (let scoreObj of this.scores) {
+            if (scoreObj.score > maxScoreObj.score) {
+                maxScoreObj = scoreObj;
+            }
+        }
+        this.maxScoreObj = maxScoreObj;
+        return maxScoreObj;
     }
 
     initPop() {
@@ -41,6 +57,11 @@ export class EvolutionManager {
                 score: scoreCb(pi, prog, i)
             });
         }
+
+        this._findMaxScore();
+        this.scores.forEach((v, i) => {
+            v.normalizedScore = v.score / this.maxScoreObj.score;
+        });
         console.log(new Date().getTime() - now);
     }
 
@@ -55,4 +76,65 @@ export class EvolutionManager {
         }
         return ret;
     }
+
+    findCoordinatesAtFraction(individualIndex, fraction) {
+        let individual = this.population[individualIndex];
+
+        let interval = 1.0 / (individual.count - 1);
+        let i = Math.floor(fraction / interval);
+
+        return [i];
+    }
+
+    random(){
+        return Math.random();
+    }
+
+    crossIndividuals(first, second) {
+        let p1 = first.toString().split(' ');
+        let p2 = second.toString().split(' ');
+        const crossProbability = 0.15;
+
+        let child = [];
+        let chosen = p1;
+
+        let i = 0;
+        let part;
+        let parenLevel = 0;
+
+        while (true) {
+            let rand = this.random();
+            if (rand < crossProbability) {
+                // switch source
+                if (chosen == p1) {
+                    chosen = p2;
+                } else {
+                    chosen = p1;
+                }
+            }
+            if (i < chosen.length) {
+                part = chosen[i];
+                if (part === '(') {
+                    parenLevel++;
+                } else if (part === ')') {
+                    if (parenLevel > 0) {
+                        parenLevel--;
+                    }
+                }
+            } else {
+                break;
+            }
+            child.push(part);
+            i++;
+        }
+
+        while (parenLevel > 0) {
+            child.push(')');
+            parenLevel--;
+        }
+
+        return pushParseString(child.join(' '));
+    }
+
+
 }

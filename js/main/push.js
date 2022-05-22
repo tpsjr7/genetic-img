@@ -28,6 +28,7 @@
 import {Canvas} from "./push-canvas.js";
 import {randomCode} from "./random-code.js";
 import {PushArray} from "./push-array.js";
+import {MockCanvasElement} from "../test/mocks.js";
 
 String.prototype.equals = function(inOther ) {
   return inOther == this;
@@ -1205,6 +1206,10 @@ window.pushParseString = pushParseString;
  */
 
 export function pushRunString( inProgram, canvasElem ) {
+  if (!canvasElem) {
+    canvasElem = new MockCanvasElement();
+  }
+
   var program = pushParseString( inProgram );
 
   var interpreter = new pushInterpreter(canvasElem);
@@ -1213,3 +1218,5 @@ export function pushRunString( inProgram, canvasElem ) {
 
   return interpreter.toString();
 }
+
+window.pushRunString = pushRunString;

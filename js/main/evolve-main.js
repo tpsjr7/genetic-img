@@ -13,6 +13,7 @@ function pixelDistance(index) {
     return sum;
 }
 
+
 function main() {
     let em = new EnvironmentManager(window, 100);
     let ev = new EvolutionManager(em, 100);
@@ -31,6 +32,7 @@ function main() {
         let dist = interpreter.stats.drawDistance;
         return dist;
     });
+
 
     let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
     if ( goodOnes.length > 0) {
