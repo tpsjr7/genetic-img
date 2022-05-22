@@ -1,10 +1,15 @@
 
-export function makeRandomSeq(seq){
+export function makeRandomSeq(seq, theRestValue){
   let count = 0;
   return function() {
     if (count >= seq.length){
-      throw "out of range";
+      if (typeof theRestValue != 'undefined') {
+        return theRestValue;
+      } else {
+        throw "out of range";
+      }
     }
+    console.log(`rand seq #${count}, val: ${seq[count]}`);
     return seq[count++];
   };
 }

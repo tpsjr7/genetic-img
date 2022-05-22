@@ -3,6 +3,7 @@ import {randomCode} from "./random-code.js";
 
 export class EvolutionManager {
     population = [];
+    elitesPopulation = [];
     conf = {
         popSize: null,
         maxPoints: 25
@@ -20,6 +21,7 @@ export class EvolutionManager {
 
         this.environmentManager = environmentManager;
         this.conf.popSize = popSize;
+        this.#_initPop();
     }
 
     _findMaxScore() {
@@ -33,7 +35,7 @@ export class EvolutionManager {
         return maxScoreObj;
     }
 
-    initPop() {
+    #_initPop() {
         this.environmentManager.createCanvases();
         this.population = [];
         let n = this.conf.popSize;
@@ -59,17 +61,24 @@ export class EvolutionManager {
         }
 
         this._findMaxScore();
+        let maxScore = this.maxScoreObj.score || 1.0;
+
         this.scores.forEach((v, i) => {
-            v.normalizedScore = v.score / this.maxScoreObj.score;
+            v.normalizedScore = v.score / maxScore;
         });
         console.log(new Date().getTime() - now);
     }
 
-    getTopScoring(n) {
-        if (n > this.scores.length) throw new Error("n too big");
+    sortScoresDesc() {
         this.scores.sort((a, b)=>{
             return b.score - a.score;
         });
+    }
+
+    getTopScoring(n) {
+        if (n > this.scores.length) throw new Error("n too big");
+        this.sortScoresDesc();
+
         let ret = [];
         for (let i = 0 ; i < n ; i++) {
             ret.push(this.scores[i]);
@@ -90,6 +99,51 @@ export class EvolutionManager {
         return Math.random();
     }
 
+    createNextGeneration() {
+        this.sortScoresDesc();
+
+        let newPop = [];
+        const elitesFraction = .1;
+        const nElites = Math.floor(this.conf.popSize * elitesFraction);
+
+        // keep elites
+        this.elitesPopulation = [];
+        for (let i = 0 ; i < nElites ; i++) {
+            let ind = this.population[this.scores[i].i];
+            newPop.push(ind);
+            this.elitesPopulation.push(ind);
+        }
+
+        // create children
+        let i1, i2;
+        let nPop = this.conf.popSize;
+
+        debugger;
+        while (newPop.length < this.conf.popSize) {
+            do {
+                i1 = Math.floor(this.random() * nPop);
+            } while (this.random()  > this.scores[i1].normalizedScore);
+
+            do {
+                i2 = Math.floor(this.random() * nPop);
+            } while (this.random()  > this.scores[i2].normalizedScore);
+
+            let child = this.crossIndividuals(
+                this.population[this.scores[i1].i], this.population[this.scores[i2].i]
+            );
+            newPop.push(child);
+        }
+        this.population = newPop;
+    }
+
+    _mutate(program, path) {
+
+    }
+    mutate() {
+
+
+    }
+
     crossIndividuals(first, second) {
         let p1 = first.toString().split(' ');
         let p2 = second.toString().split(' ');
@@ -106,7 +160,7 @@ export class EvolutionManager {
             let rand = this.random();
             if (rand < crossProbability) {
                 // switch source
-                if (chosen == p1) {
+                if (chosen === p1) {
                     chosen = p2;
                 } else {
                     chosen = p1;

@@ -8,7 +8,7 @@ addTests({
     testGetTopScoring() {
         let window = new MockWindow();
         let environmentManager = new EnvironmentManager(window,4);
-        let em = new EvolutionManager(environmentManager, 5);
+        let em = new EvolutionManager(environmentManager, 4);
         em.scores = [
             {i: 0, score: 10},
             {i: 1, score: 15},
@@ -18,11 +18,10 @@ addTests({
         let top = em.getTopScoring(2);
         assertEquals([2, 1], [top[0].i, top[1].i]);
     },
-   testIt(){
+   testEvolutionManager(){
        let window = new MockWindow();
        let environmentManager = new EnvironmentManager(window,5);
        let em = new EvolutionManager(environmentManager, 5);
-       em.initPop();
        assertEquals(5, em.population.length);
        assertTrue(em.population[0].length > 0);
        em.population[2] = pushParseString("( 1.1 1.1 FLOAT.CV_FORWARD FLOAT.CV_FORWARD )");
@@ -52,7 +51,7 @@ addTests({
 
     testCrossIndividuals() {
         let mockWindow = new MockWindow();
-        let environmentManager = new EnvironmentManager(mockWindow, 1);
+        let environmentManager = new EnvironmentManager(mockWindow, 2);
         let em = new EvolutionManager(environmentManager, 2);
 
         em.random = makeRandomSeq([1, 1, 1, 1, 1, 1]);
@@ -71,5 +70,27 @@ addTests({
         i1 = pushParseString('( 1 1 1 )');
         i2 = pushParseString('( 2 ( 2 2 ) )');
         assertEquals('( 2 ( 1 ) )', em.crossIndividuals(i1, i2).toString());
+    },
+    testCreateNextGeneration() {
+        let mockWindow = new MockWindow();
+        let environmentManager = new EnvironmentManager(mockWindow, 10);
+        let em = new EvolutionManager(environmentManager, 10);
+
+        for (let i = 0 ; i < 10 ; i++) {
+            em.population.push(pushParseString(`( ${i} ${i} ${i} ${i} ${i} ${i} )`));
+        }
+
+        em.scorePopulation(()=>{return 0.95;});
+
+        em.random = makeRandomSeq([
+            0, 0, .1, 0, // pick 0th and 1st individuals
+            1, 1, 1,// don't switch with cross
+            0, // switch to 1st individual ( 1 1 1 ...
+            1, // don't switch
+        ], 0.99);
+        em.createNextGeneration();
+
+        assertEquals(1, em.elitesPopulation.length);
+        assertEquals(10, em.population.length);
     }
 });

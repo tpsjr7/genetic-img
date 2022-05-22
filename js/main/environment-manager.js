@@ -27,7 +27,9 @@ export class EnvironmentManager {
 
   getCanvasElem(i) {
     let c = this.canvases[i];
-    if (!c) throw new Error("invalid canvas number");
+    if (!c) {
+      throw new Error("invalid canvas number");
+    }
     return c;
   }
 

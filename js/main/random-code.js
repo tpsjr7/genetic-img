@@ -48,6 +48,14 @@ function shuffleArray(array, randFloatFunc) {
         array[j] = temp;
     }
 }
+
+/**
+ * random int from min to max inclusive
+ * @param min
+ * @param max
+ * @param randFloatFunc
+ * @returns int
+ */
 export function randIntRange(min, max, randFloatFunc) {
   return Math.floor(randFloatFunc() * ( max - min + 1)) + min;
 }

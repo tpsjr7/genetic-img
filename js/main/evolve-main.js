@@ -25,14 +25,11 @@ function main() {
         em.positionCanvases()
     });
 
-    ev.initPop();
-
     ev.scorePopulation((interpreter, program, index)=>{
         // return interpreter.executionCounts['FLOAT.CV_FORWARD'];
         let dist = interpreter.stats.drawDistance;
         return dist;
     });
-
 
     let goodOnes = ev.getTopScoring(10).filter(it => it.score > 0);
     if ( goodOnes.length > 0) {
