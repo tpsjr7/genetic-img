@@ -6,7 +6,7 @@ export function makeRandomSeq(seq, theRestValue){
       if (typeof theRestValue != 'undefined') {
         return theRestValue;
       } else {
-        throw "out of range";
+        throw new Error("out of range");
       }
     }
     console.log(`rand seq #${count}, val: ${seq[count]}`);
