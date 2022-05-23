@@ -26,7 +26,7 @@
 // export let window.logState;
 
 import {Canvas} from "./push-canvas.js";
-import {randomCode} from "./random-code.js";
+import {RandomCodeGenerator} from "./random-code.js";
 import {PushArray} from "./push-array.js";
 import {MockCanvasElement} from "../test/mocks.js";
 
@@ -180,9 +180,8 @@ function pushInstructionRandomCode( inInterpreter, inStack ) {
     throw "randInstructions not set";
   }
   let maxSize = Math.min(Math.abs(inInterpreter.intStack.pop()), maxPoints);
-  let len = inInterpreter.nextRandInt(maxSize)
+  let code = inInterpreter.codeGenerator.randomCode(maxSize);
 
-  let code = randomCode(maxSize, inInterpreter, Math.random);
   inInterpreter.codeStack.push(code);
   return;
 }
@@ -700,6 +699,7 @@ export function pushInterpreter(canvasElem) {
     'EFFORT-LIMIT': 1000,
   };
 
+
   this.stats = {
     drawDistance: 0
   };
@@ -1005,6 +1005,8 @@ export function pushInterpreter(canvasElem) {
   }
 
   this.randInstructions = getPushInstructionSet(this);
+
+  this.codeGenerator = new RandomCodeGenerator(this);
   /// End Canvas stuff
 }
 

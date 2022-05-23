@@ -1,5 +1,5 @@
 import {pushInterpreter, pushParseString, pushRunProgram} from "./push.js";
-import {randomCode} from "./random-code.js";
+import {RandomCodeGenerator} from "./random-code.js";
 
 export class EvolutionManager {
     population = [];
@@ -12,8 +12,9 @@ export class EvolutionManager {
     scores = [];
     maxScoreObj;
 
-    purgePercent = 0.20;
-    elitePercent = 0.05;
+    elitesFraction = .1;
+    mutationChance = .02;
+    maxMutateAddPoints = 5;
 
     constructor(environmentManager, popSize) {
         if (!environmentManager) throw new Error("missing window");
@@ -39,9 +40,9 @@ export class EvolutionManager {
         this.environmentManager.createCanvases();
         this.population = [];
         let n = this.conf.popSize;
+        let rcg = new RandomCodeGenerator(new pushInterpreter(this.environmentManager.getCanvasElem(0)));
         for (let i = 0; i < n; i++){
-            let pi = new pushInterpreter(this.environmentManager.getCanvasElem(i));
-            let prog = randomCode(this.conf.maxPoints, pi, Math.random);
+            let prog = rcg.randomCode(this.conf.maxPoints);
             this.population.push(prog);
         }
     }
@@ -103,8 +104,8 @@ export class EvolutionManager {
         this.sortScoresDesc();
 
         let newPop = [];
-        const elitesFraction = .1;
-        const nElites = Math.floor(this.conf.popSize * elitesFraction);
+
+        const nElites = Math.floor(this.conf.popSize * this.elitesFraction);
 
         // keep elites
         this.elitesPopulation = [];
@@ -118,7 +119,6 @@ export class EvolutionManager {
         let i1, i2;
         let nPop = this.conf.popSize;
 
-        debugger;
         while (newPop.length < this.conf.popSize) {
             do {
                 i1 = Math.floor(this.random() * nPop);
@@ -136,11 +136,23 @@ export class EvolutionManager {
         this.population = newPop;
     }
 
-    _mutate(program, path) {
+    mutate(program) {
 
-    }
-    mutate() {
+        throw new Error("not implemented");
+        for (let i = 0 ; i < program ; i++) {
 
+            if (this.random() < this.mutationChance) {
+                if (this.random() < 0.5) {
+                    // change
+                    program[i] = randomCode(this.maxMutateAddPoints)
+                } else {
+                    // delete
+                }
+            }
+            if (Array.isArray(program[i])) {
+
+            }
+        }
 
     }
 

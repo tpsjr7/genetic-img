@@ -8,7 +8,7 @@ import {
 
 import {getPushInstructionSet, pushInterpreter, pushParseString, pushRunProgram} from "../main/push.js";
 import {MockCanvasElement} from "./mocks.js";
-import {decompose, randomCode, randomCodeWithSize} from "../main/random-code.js";
+import {RandomCodeGenerator} from "../main/random-code.js";
 import {PushArray} from "../main/push-array.js";
 
 addTests({
@@ -215,51 +215,58 @@ addTests({
   },
   testDecompose() {
 
+    let rcg = new RandomCodeGenerator();
     // then return a list containing NUMBER
-    assertEquals('( 1 )', decompose(1, 3, null).toString());
+    assertEquals('( 1 )', rcg.decompose(1, 3, null).toString());
 
     //MAX-PARTS is 1
-    assertEquals('( 10 )', decompose(10, 1, null).toString());
+    assertEquals('( 10 )', rcg.decompose(10, 1, null).toString());
 
-    assertEquals('( 3 3 2 1 1 )', decompose(10, 10, makeRandomSeq([2, 2, 1, 0])).toString());
+    rcg.nextRandIntFunc = makeRandomSeq([2, 2, 1, 0]);
+    assertEquals('( 3 3 2 1 1 )', rcg.decompose(10, 10).toString());
   },
   testRandomCodeWithSize() {
-    let interpreter = new pushInterpreter(new MockCanvasElement());
-    interpreter.randInstructions = [
+    let pi = new pushInterpreter(new MockCanvasElement());
+    pi.randInstructions = [
       'CODE.NOOP',
       'INTEGER.+',
       'INTEGER.-',
       'INTEGER.MAX'
     ];
 
+    let rcg = new RandomCodeGenerator(pi);
     // choose random float
-    interpreter.nextRandInt = makeRandomSeq([2, 1]);
-    let randFloatFunc = makeRandomSeq([0.04, 0.75, 0.0, 0.85]);
-    assertEquals(5.0, randomCodeWithSize(1, interpreter, randFloatFunc));
+    rcg.nextRandIntFunc = makeRandomSeq([2, 1]);
+    rcg.randFloatFunc = makeRandomSeq([0.04, 0.75, 0.0, 0.85]);
+    assertEquals(5.0, rcg.randomCodeWithSize(1));
 
     // choose random int
-    interpreter.clearStacks();
-    assertEquals(7, randomCodeWithSize(1, interpreter, randFloatFunc));
+    pi.clearStacks();
+    assertEquals(7, rcg.randomCodeWithSize(1));
 
     // choose random bool
-    interpreter.clearStacks();
-    interpreter.nextRandInt = makeRandomSeq([0, 0]);
-    assertEquals('TRUE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.9])));
-    interpreter.clearStacks();
-    assertEquals('FALSE', randomCodeWithSize(1, interpreter, makeRandomSeq([0.04, 0.2])));
+    pi.clearStacks();
+    rcg.nextRandIntFunc = makeRandomSeq([0, 0]);
+    rcg.randFloatFunc = makeRandomSeq([0.04, 0.9]);
+    assertEquals('TRUE', rcg.randomCodeWithSize(1));
+    pi.clearStacks();
+
+    rcg.randFloatFunc = makeRandomSeq([0.04, 0.2]);
+    assertEquals('FALSE', rcg.randomCodeWithSize(1));
 
     // choose random element
-    interpreter.clearStacks();
-    interpreter.nextRandInt = makeRandomSeq([2]);
-    assertEquals('INTEGER.-', randomCodeWithSize(1, interpreter, makeRandomSeq([0.1])));
+    pi.clearStacks();
+    rcg.nextRandIntFunc = makeRandomSeq([2]);
+    rcg.randFloatFunc = makeRandomSeq([0.1]);
+    assertEquals('INTEGER.-', rcg.randomCodeWithSize(1));
 
     // more than one point
-    interpreter.clearStacks();
-    randFloatFunc = makeRandomSeq([0.1, 0.1, 0.5]);
-    interpreter.nextRandInt = makeRandomSeq([0, 0, 0]);
-    assertEquals(['CODE.NOOP', 'CODE.NOOP'], randomCodeWithSize(3, interpreter, randFloatFunc));
+    pi.clearStacks();
+    rcg.randFloatFunc = makeRandomSeq([0.1, 0.1, 0.5]);
+    rcg.nextRandIntFunc = makeRandomSeq([0, 0, 0]);
+    assertEquals(['CODE.NOOP', 'CODE.NOOP'], rcg.randomCodeWithSize(3));
 
-    interpreter.clearStacks();
+    pi.clearStacks();
 
     // choseFloats = [];
     // randFloatFunc = () => {
@@ -273,10 +280,10 @@ addTests({
     //   choseInts.push(ret);
     //   return ret;
     // };
-    randFloatFunc = makeRandomSeq([0.75,0.03,0.94,0.7,0.14,0.7,0.45,0.43,0.94,0.14,0.88]);
-    interpreter.nextRandInt = makeRandomSeq([2,1,0,0,1,1,3,1,1]);
+    rcg.randFloatFunc = makeRandomSeq([0.75,0.03,0.94,0.7,0.14,0.7,0.45,0.43,0.94,0.14,0.88]);
+    rcg.nextRandIntFunc = makeRandomSeq([2,1,0,0,1,1,3,1,1]);
 
-    let actual = randomCode(10, interpreter, randFloatFunc).toString();
+    let actual = rcg.randomCode(10).toString();
 
     // console.log(choseFloats.join(','));
     // console.log(choseInts.join(','));
@@ -285,7 +292,7 @@ addTests({
     assertEquals(expected, actual);
 
     assertThrows(()=>{
-      randomCodeWithSize(0, interpreter, randFloatFunc);
+      rcg.randomCodeWithSize(0);
     });
   },
   testGetPushInstructions() {
