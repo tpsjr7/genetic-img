@@ -1,5 +1,6 @@
 import {pushInterpreter, pushParseString, pushRunProgram} from "./push.js";
 import {RandomCodeGenerator} from "./random-code.js";
+import {MockCanvasElement} from "../test/mocks.js";
 
 export class EvolutionManager {
     population = [];
@@ -49,6 +50,7 @@ export class EvolutionManager {
 
     scorePopulation(scoreCb) {
         let now = new Date().getTime();
+        this.environmentManager.resetCanvases();
         let n = this.conf.popSize;
         this.scores = [];
         for (let i = 0 ; i < n ; i++) {
@@ -87,15 +89,6 @@ export class EvolutionManager {
         return ret;
     }
 
-    findCoordinatesAtFraction(individualIndex, fraction) {
-        let individual = this.population[individualIndex];
-
-        let interval = 1.0 / (individual.count - 1);
-        let i = Math.floor(fraction / interval);
-
-        return [i];
-    }
-
     random(){
         return Math.random();
     }
@@ -119,6 +112,9 @@ export class EvolutionManager {
         let i1, i2;
         let nPop = this.conf.popSize;
 
+        let pi = new pushInterpreter(new MockCanvasElement());
+        let rcg = new RandomCodeGenerator(pi);
+
         while (newPop.length < this.conf.popSize) {
             do {
                 i1 = Math.floor(this.random() * nPop);
@@ -126,11 +122,14 @@ export class EvolutionManager {
 
             do {
                 i2 = Math.floor(this.random() * nPop);
-            } while (this.random()  > this.scores[i2].normalizedScore);
+            } while (i1 === i2 || this.random()  > this.scores[i2].normalizedScore);
 
             let child = this.crossIndividuals(
-                this.population[this.scores[i1].i], this.population[this.scores[i2].i]
+                this.population[this.scores[i1].i],
+                this.population[this.scores[i2].i]
             );
+
+            this.mutate(child, rcg);
             newPop.push(child);
         }
         this.population = newPop;
@@ -183,8 +182,12 @@ export class EvolutionManager {
                 if (part === '(') {
                     parenLevel++;
                 } else if (part === ')') {
-                    if (parenLevel > 0) {
-                        parenLevel--;
+                    parenLevel--;
+                    if (parenLevel < 0 ) {
+                        parenLevel = 0;
+                        // throw away unmatched paren
+                        i++;
+                        continue;
                     }
                 }
             } else {

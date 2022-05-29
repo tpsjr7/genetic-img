@@ -36,20 +36,6 @@ addTests({
        assertEquals(1.1, best[1].score);
    },
 
-    testFindCoordinates() {
-        let window = new MockWindow();
-        let environmentManager = new EnvironmentManager(window,2);
-        let em = new EvolutionManager(environmentManager, 2);
-
-        let p0 = em.population[0] = pushParseString('( 0.0 0.25 0.5 0.75 )')
-
-        assertEquals([0], em.findCoordinatesAtFraction(0, 0));
-        assertEquals([0], em.findCoordinatesAtFraction(0, 0.01));
-        assertEquals([1], em.findCoordinatesAtFraction(0, 0.26));
-        assertEquals([3], em.findCoordinatesAtFraction(0, 0.99));
-
-    },
-
     testCrossIndividuals() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 2);

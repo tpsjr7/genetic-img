@@ -4,6 +4,8 @@ export function Canvas(canvasElem){
     let currentX, currentY, theta = 0;
     let newX, newY;
 
+    this.lastDrawDistance = 0;
+
     let _transform = function(x, y) {
         newX = x + _canvas.width / 2;
         newY = y + _canvas.height / 2;
@@ -16,7 +18,12 @@ export function Canvas(canvasElem){
             && newX > 0;
     }
 
-    this.lastDrawDistance = 0;
+    this.reset = function() {
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        ctx.beginPath();
+        ctx.moveTo(0.5, 0.5);
+    }
+
     this.moveTo = function(x, y) {
         _transform(x, y);
         if (_checkBounds()) {

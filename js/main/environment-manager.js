@@ -25,6 +25,12 @@ export class EnvironmentManager {
     };
   }
 
+  resetCanvases() {
+    for (let c of this.canvases) {
+      c.reset();
+    }
+  }
+
   getCanvasElem(i) {
     let c = this.canvases[i];
     if (!c) {

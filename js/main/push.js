@@ -967,8 +967,7 @@ export function pushInterpreter(canvasElem) {
   /// Canvas stuff
   if (canvasElem) {
 
-    let canvas = new Canvas(canvasElem)
-    canvas.moveTo(0.5, 0.5);
+    let canvas = new Canvas(canvasElem);
 
     this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
       if (inStack.length >= 2) {
@@ -1150,15 +1149,14 @@ export function pushParseString( inString ) {
   for( var i = 0; i < tokens.length; i++ ) {
     if( !spaces.test( tokens[ i ] ) ) {
 
-      if( tokens[ i ] == '(' ) {        // Push
+      if( tokens[ i ] === '(' ) {        // Push
 
         listStack.push( new PushArray() );
         currentList = listStack[ listStack.length - 1 ];
 
       } else if( tokens[ i ] == ')' ) {    // Pop
         if( listStack.length < 1 ) {
-          // alert( "Unmatched ')' in Push program (token #" + i + ")" );
-          return null;
+          throw new Error( "Unmatched ')' in Push program (token #" + i + ")");
         }
 
         var newList = listStack.pop();
@@ -1173,7 +1171,7 @@ export function pushParseString( inString ) {
       } else if ( ( num = parseFloat( tokens[ i ] ) ) == tokens[ i ] ) {  // Number literal
         if( currentList == null ) {
           // alert( 'Push parse error near token "' + tokens[ i ] + '"' );
-          return null;
+          throw new Error('Push parse error near token "' + tokens[ i ] + '"');
         }
 
         if( decimal.test( tokens[ i ] ) )
@@ -1182,8 +1180,7 @@ export function pushParseString( inString ) {
           currentList.push( new pushInt( num ) );
       } else if( tokens[ i ] != '' ) {    // Instruction token
         if( currentList == null ) {
-          // alert( 'Push parse error near token "' + tokens[ i ] + '"' );
-          return null;
+          throw new Error('Push parse error near token "' + tokens[ i ] + '"');
         }
 
         currentList.push( tokens[ i ] );
@@ -1192,8 +1189,7 @@ export function pushParseString( inString ) {
   }
 
   if( listStack.length > 0 ) {
-    // alert( "Unmatched '(' in Push program" );
-    return null;
+    throw new Error("Unmatched '(' in Push program");
   }
 
   return lastList;
