@@ -25,7 +25,7 @@
 // slight modification to built-in types to lets us compare them like program
 // export let window.logState;
 
-import {Canvas} from "./push-canvas.js";
+import {CanvasWrapper} from "./canvas-wrapper.js";
 import {RandomCodeGenerator} from "./random-code.js";
 import {PushArray} from "./push-array.js";
 import {MockCanvasElement} from "../test/mocks.js";
@@ -967,7 +967,7 @@ export function pushInterpreter(canvasElem) {
   /// Canvas stuff
   if (canvasElem) {
 
-    let canvas = new Canvas(canvasElem);
+    let canvas = new CanvasWrapper(canvasElem);
 
     this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
       if (inStack.length >= 2) {

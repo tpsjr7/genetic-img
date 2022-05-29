@@ -1,4 +1,4 @@
-export function Canvas(canvasElem){
+export function CanvasWrapper(canvasElem){
     let _canvas = canvasElem;
     let ctx = _canvas.getContext('2d');
     let currentX, currentY, theta = 0;
