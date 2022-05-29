@@ -1,3 +1,5 @@
+import {PushArray} from "./push-array.js";
+
 export class RandomCodeGenerator {
 
     randFloatFunc;
@@ -26,14 +28,17 @@ export class RandomCodeGenerator {
     */
     decompose(number, maxParts) {
         if (number === 0) {
-            return [];
+            return new PushArray();
         }
         if (number === 1 || maxParts === 1) {
-            return [number];
+            let pa = new PushArray();
+            pa.push(number);
+            return pa;
         }
 
         let thisPart = this.nextRandIntFunc(number - 1) + 1;
-        let toReturn = [thisPart];
+        let toReturn = new PushArray();
+        toReturn.push(thisPart);
         for (let val of this.decompose(number - thisPart, maxParts - 1)) {
             toReturn.push(val);
         }
@@ -110,7 +115,7 @@ export class RandomCodeGenerator {
                 SIZES-THIS-LEVEL.
             */
             let sizesThisLevel = this.decompose(points - 1, points - 1);
-            let ret = [];
+            let ret = new PushArray();
             for (let val of sizesThisLevel) {
                 ret.push(this.randomCodeWithSize(val));
             }

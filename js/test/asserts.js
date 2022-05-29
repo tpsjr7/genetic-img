@@ -1,15 +1,30 @@
 
-export function makeRandomSeq(seq, theRestValue){
+export function makeRandomSeq(seq, opts, log){
+  if (!log) {
+    log = console.log;
+  }
   let count = 0;
+  let label;
+  let theRestValue;
+  if (typeof opts !== 'undefined') {
+    if (typeof opts !== 'object') {
+      throw new Error('expecting options object');
+    }
+    theRestValue = opts.rest;
+    label = opts.mess;
+  }
+  label = label ? 'Seq ' + label + ': ' : '';
   return function() {
     if (count >= seq.length){
       if (typeof theRestValue != 'undefined') {
+        log(`${label}index #${count}, val: ${theRestValue} rest:true`);
+        count++;
         return theRestValue;
       } else {
         throw new Error("out of range");
       }
     }
-    console.log(`rand seq #${count}, val: ${seq[count]}`);
+    log(`${label}index #${count}, val: ${seq[count]}`);
     return seq[count++];
   };
 }

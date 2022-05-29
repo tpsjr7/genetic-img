@@ -192,6 +192,7 @@ addTests({
 
   },
   testMakeRanSeq() {
+
     let rand = makeRandomSeq([4,3,7]);
     assertEquals(4, rand());
     assertEquals(3, rand());
@@ -204,6 +205,32 @@ addTests({
       assertEquals(99, rand());
       fail("should have thrown")
     } catch (e) { }
+
+    let logged;
+    let log = (mess)=>{
+      console.log(mess);
+      logged = mess;
+    }
+    let seq;
+    assertThrows(()=>{
+      makeRandomSeq([], 4);
+    }, 'expecting options object');
+
+    seq = makeRandomSeq([5,4], {rest: 6}, log);
+    assertEquals(5, seq());
+    assertEquals("index #0, val: 5", logged);
+    assertEquals(4, seq());
+    assertEquals(6, seq());
+    assertEquals(6, seq());
+    assertEquals("index #3, val: 6 rest:true", logged);
+
+    seq = makeRandomSeq([5,4], {rest: 6, mess: 'A'}, log);
+    assertEquals(5, seq());
+    assertEquals("Seq A: index #0, val: 5", logged);
+    assertEquals(4, seq());
+    assertEquals(6, seq());
+    assertEquals(6, seq());
+    assertEquals("Seq A: index #3, val: 6 rest:true", logged);
 
   },
   testAdd() {

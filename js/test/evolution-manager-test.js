@@ -1,8 +1,9 @@
 import {addTests, assertEquals, assertTrue, makeRandomSeq} from "./asserts.js";
 import {EnvironmentManager} from "../main/environment-manager.js";
 import {EvolutionManager} from "../main/evolution-manager.js";
-import {MockWindow} from "./mocks.js";
-import {pushParseString} from "../main/push.js";
+import {MockCanvasElement, MockWindow} from "./mocks.js";
+import {pushInterpreter, pushParseString} from "../main/push.js";
+import {RandomCodeGenerator} from "../main/random-code.js";
 
 addTests({
     testGetTopScoring() {
@@ -87,10 +88,65 @@ addTests({
             1, 1, 1,// don't switch with cross
             0, // switch to 1st individual ( 1 1 1 ...
             1, // don't switch
-        ], 0.99);
+        ], {rest: 0.99});
         em.createNextGeneration();
 
         assertEquals(1, em.elitesPopulation.length);
         assertEquals(10, em.population.length);
+    },
+    testMutate() {
+        let p1 = pushParseString('( 1 1 1 1 )');
+        let enm = new EnvironmentManager(new MockWindow(), 1);
+        let evm = new EvolutionManager(enm, 1);
+
+        let pi = new pushInterpreter(new MockCanvasElement());
+
+        pi.randInstructions = [
+            'INTEGER.+',
+            'INTEGER.-',
+            'INTEGER./'
+        ];
+
+
+        let rcg  = new RandomCodeGenerator(pi);
+
+        evm.random = makeRandomSeq([
+            1,// skip first
+            0, // mutate second
+            1,// delete it
+        ], {rest: 1, mess: "A"} // skip the rest
+        );
+
+        evm.mutate(p1, rcg);
+        assertEquals('( 1 1 1 )', p1.toString());
+
+        evm.random = makeRandomSeq([
+                1,// skip first (
+                0, // mutate second '1'
+                0,// change it
+                0,
+                0
+            ], {mess: "B random"}//, 1 // skip the rest
+        );
+
+        rcg  = new RandomCodeGenerator(pi);
+        rcg.nextRandIntFunc = makeRandomSeq([
+            1, // decombonse this part
+            1,
+            0
+        ], {mess: "B nextRandIntFunc"});
+        rcg.randFloatFunc = makeRandomSeq([
+            0.3,
+            0.9,
+            0.1,
+            0.5
+        ])
+
+        evm.maxMutateAddPoints = 3;
+        evm.mutate(p1, rcg);
+        assertEquals('( 1 INTEGER.- INTEGER.- )', p1.toString());
+
     }
+
+
 });

@@ -13,7 +13,7 @@ export class EvolutionManager {
     maxScoreObj;
 
     elitesFraction = .1;
-    mutationChance = .02;
+    mutationChance = .05;
     maxMutateAddPoints = 5;
 
     constructor(environmentManager, popSize) {
@@ -136,24 +136,24 @@ export class EvolutionManager {
         this.population = newPop;
     }
 
-    mutate(program) {
-
-        throw new Error("not implemented");
-        for (let i = 0 ; i < program ; i++) {
-
+    mutate(program, rcg) {
+        for (let i = 0 ; i < program.length ; i++) {
             if (this.random() < this.mutationChance) {
                 if (this.random() < 0.5) {
                     // change
-                    program[i] = randomCode(this.maxMutateAddPoints)
+                    // use splice because it keeps the program count constant;
+                    let code =  rcg.randomCode(this.maxMutateAddPoints)
+                    program.splice(i, 1, code);
                 } else {
                     // delete
+                    program.splice(i, 1);
+                    i--;
                 }
-            }
-            if (Array.isArray(program[i])) {
-
+                continue;
+            } else if (Array.isArray(program[i])) {
+                this.mutate(program[i], rcg);
             }
         }
-
     }
 
     crossIndividuals(first, second) {
