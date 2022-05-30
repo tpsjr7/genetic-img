@@ -1,9 +1,3 @@
-export class MockCanvas {
-    moveTo(){}
-    forward(){}
-    turn(){}
-
-};
 
 export class MockCanvasElement {
     style = {};
@@ -13,7 +7,10 @@ export class MockCanvasElement {
         return {
             moveTo(){},
             lineTo(){},
-            stroke(){}
+            stroke(){},
+            clearRect(){},
+            beginPath(){},
+            canvas: this
         };
     }
 }
