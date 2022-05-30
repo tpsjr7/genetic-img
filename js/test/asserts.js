@@ -14,7 +14,11 @@ export function makeRandomSeq(seq, opts, log){
     label = opts.mess;
   }
   label = label ? 'Seq ' + label + ': ' : '';
+  let COUNT_LIMIT = 100;
   return function() {
+    if (count > COUNT_LIMIT) {
+      throw new Error("hit count limit " + COUNT_LIMIT);
+    }
     if (count >= seq.length){
       if (typeof theRestValue != 'undefined') {
         log(`${label}index #${count}, val: ${theRestValue} rest:true`);
