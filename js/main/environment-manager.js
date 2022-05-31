@@ -1,3 +1,5 @@
+import {CanvasWrapper} from "./canvas-wrapper.js";
+
 export class EnvironmentManager {
   canvases = [];
   nCanvases;
@@ -31,12 +33,20 @@ export class EnvironmentManager {
     }
   }
 
-  getCanvasElem(i) {
+  getCanvasWrapper(i) {
     let c = this.canvases[i];
     if (!c) {
       throw new Error("invalid canvas number");
     }
     return c;
+  }
+
+  getCanvasElem(i) {
+    let c = this.canvases[i];
+    if (!c) {
+      throw new Error("invalid canvas number");
+    }
+    return c.getElement();
   }
 
   createCanvases() {
@@ -46,7 +56,8 @@ export class EnvironmentManager {
 
     for (let i = 0 ; i < this.nCanvases; i++) {
       let canvas = this.window.document.createElement('canvas');
-      this.canvases.push(canvas);
+      let cw = new CanvasWrapper(canvas);
+      this.canvases.push(cw);
       this.window.document.body.appendChild(canvas);
     }
     this.positionCanvases();
@@ -55,7 +66,7 @@ export class EnvironmentManager {
   positionCanvases() {
     for (let i = 0 ; i < this.canvases.length; i++) {
       let pos = this.calcPositionForCanvas(i);
-      let canvas = this.canvases[i];
+      let canvas = this.canvases[i].getElement();
       canvas.width = this.DRAW_WIDTH;
       canvas.height = this.DRAW_HEIGHT;
       canvas.style.border = 'solid 1px black';

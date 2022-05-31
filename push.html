@@ -20,6 +20,7 @@
 <textarea id="output" cols=70 rows=20 style="clear: left"></textarea>
 <script type="module">
     import {pushRunString} from './js/main/push.js';
+    import {CanvasWrapper} from './js/main/canvas-wrapper.js';
     let logout = '';
     function logState(inInterpreter, message) {
         if(!inInterpreter.clearStacks) {
@@ -40,9 +41,9 @@
         let prog = document.getElementById('program');
         let results = pushRunString(
             prog.value,
-            document.getElementsByTagName('canvas')[0]
+            new CanvasWrapper(document.getElementsByTagName('canvas')[0])
         );
-        document.getElementById('output').innerHTML=results;
+        document.getElementById('output').innerHTML = results;
     }
     run();
     window.logState = logState;

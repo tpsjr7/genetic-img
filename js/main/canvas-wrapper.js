@@ -18,10 +18,14 @@ export function CanvasWrapper(canvasElem){
             && newX > 0;
     }
 
+    this.getElement = function() {
+        return _canvas;
+    }
+
     this.reset = function() {
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         ctx.beginPath();
-        ctx.moveTo(0.5, 0.5);
+        this.moveTo(0.5, 0.5);
     }
 
     this.moveTo = function(x, y) {

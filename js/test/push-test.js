@@ -10,6 +10,7 @@ import {getPushInstructionSet, pushInterpreter, pushParseString, pushRunProgram}
 import {MockCanvasElement} from "./mocks.js";
 import {RandomCodeGenerator} from "../main/random-code.js";
 import {PushArray} from "../main/push-array.js";
+import {CanvasWrapper} from "../main/canvas-wrapper.js";
 
 addTests({
   testAssertEquals() {
@@ -236,7 +237,7 @@ addTests({
   testAdd() {
     let inProgram = '(5 7 INTEGER.+)'
     let program = pushParseString( inProgram );
-    let interpreter = new pushInterpreter(new MockCanvasElement());
+    let interpreter = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let info = pushRunProgram( interpreter, program );
     assertEquals(interpreter.intStack[0], 12);
   },
@@ -253,7 +254,7 @@ addTests({
     assertEquals('( 3 3 2 1 1 )', rcg.decompose(10, 10).toString());
   },
   testRandomCodeWithSize() {
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     pi.randInstructions = [
       'CODE.NOOP',
       'INTEGER.+',
@@ -331,14 +332,14 @@ addTests({
     let keys = getPushInstructionSet(pi);
     assertEquals(['FLOAT.+', 'INTEGER.+'], keys);
 
-    pi = new pushInterpreter(new MockCanvasElement());
+    pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     keys = getPushInstructionSet(pi);
     assertTrue(keys.length > 100);
 
     assertEquals(pi.randInstructions, keys);
   },
   testPushInstructionRandomCode() {
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let program = pushParseString('( 10 CODE.RAND )' );
     pushRunProgram(pi, program);
 
@@ -351,7 +352,7 @@ addTests({
     //int: ( 1 )
     // bool: ( false false )
     //exec: ( CODE.POP CODE.POP BOOLEAN.FLUSH CODE.STACKDEPTH INTEGER.FROMBOOLEAN )
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     pi.boolStack.push(false);
     pi.boolStack.push(false);
     pi.intStack.push(1);
@@ -360,13 +361,13 @@ addTests({
     pushRunProgram(pi, program);
   },
   testBug2() {
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let program = pushParseString('(0.9 FLOAT.FROMINTEGER)' );
     pushRunProgram(pi, program);
     assertEquals(1, pi.floatStack.length);
   },
   testExecutionCounts() {
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     for (let v of [1, 1, 1, 2.5, 3, 5]) {
       pi.floatStack.push(v);
     }
@@ -386,7 +387,7 @@ addTests({
   testInfiniteLoopBug() {
     let bad ='( NAME.RAND ( INTEGER.FLUSH ( EXEC.IF ( FLOAT.ROT ) CODE.DUP ) ( CODE.IF CODE.LIST ) ( EXEC.K ) ( CODE.QUOTE ) ) ( EXEC.POP ) ( FLOAT.% ) CODE.DO )';
     let program = pushParseString(bad);
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let ret = pushRunProgram(pi, program);
     assertEquals(-1, ret);
     assertEquals(2,  pi._error);
@@ -394,14 +395,14 @@ addTests({
   testInvalidStateBug() {
     let bad = '( 0 EXEC.SHOVE CODE.FLUSH )';
     let program = pushParseString(bad);
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let ret = pushRunProgram(pi, program);
   },
   testExecDupBug() {
     let bad;
     bad = '( EXEC.DUP EXEC.DUP )';
     let program = pushParseString(bad);
-    let pi = new pushInterpreter(new MockCanvasElement());
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let ret = pushRunProgram(pi, program);
     assertEquals(1,  pi._error);
   }

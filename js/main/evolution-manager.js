@@ -1,6 +1,7 @@
 import {pushInterpreter, pushParseString, pushRunProgram} from "./push.js";
 import {RandomCodeGenerator} from "./random-code.js";
 import {MockCanvasElement} from "../test/mocks.js";
+import {CanvasWrapper} from "./canvas-wrapper.js";
 
 export class EvolutionManager {
     population = [];
@@ -16,6 +17,7 @@ export class EvolutionManager {
     elitesFraction = .1;
     mutationChance = .05;
     maxMutateAddPoints = 5;
+    crossProbability = 0.15;
 
     constructor(environmentManager, popSize) {
         if (!environmentManager) throw new Error("missing window");
@@ -41,7 +43,7 @@ export class EvolutionManager {
         this.environmentManager.createCanvases();
         this.population = [];
         let n = this.conf.popSize;
-        let rcg = new RandomCodeGenerator(new pushInterpreter(this.environmentManager.getCanvasElem(0)));
+        let rcg = new RandomCodeGenerator(new pushInterpreter(this.environmentManager.getCanvasWrapper(0)));
         for (let i = 0; i < n; i++){
             let prog = rcg.randomCode(this.conf.maxPoints);
             this.population.push(prog);
@@ -54,7 +56,7 @@ export class EvolutionManager {
         let n = this.conf.popSize;
         this.scores = [];
         for (let i = 0 ; i < n ; i++) {
-            let pi = new pushInterpreter(this.environmentManager.getCanvasElem(i));
+            let pi = new pushInterpreter(this.environmentManager.getCanvasWrapper(i));
             let prog = this.population[i];
             pushRunProgram(pi, prog);
             this.scores.push({
@@ -112,7 +114,7 @@ export class EvolutionManager {
         let i1, i2;
         let nPop = this.conf.popSize;
 
-        let pi = new pushInterpreter(new MockCanvasElement());
+        let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
         let rcg = new RandomCodeGenerator(pi);
 
         while (newPop.length < this.conf.popSize) {
@@ -158,18 +160,17 @@ export class EvolutionManager {
     crossIndividuals(first, second) {
         let p1 = first.toString().split(' ');
         let p2 = second.toString().split(' ');
-        const crossProbability = 0.15;
 
         let child = [];
         let chosen = p1;
 
         let i = 0;
-        let part;
+
         let parenLevel = 0;
 
         while (true) {
             let rand = this.random();
-            if (rand < crossProbability) {
+            if (rand < this.crossProbability) {
                 // switch source
                 if (chosen === p1) {
                     chosen = p2;
@@ -178,28 +179,27 @@ export class EvolutionManager {
                 }
             }
             if (i < chosen.length) {
-                part = chosen[i];
+                let part = chosen[i];
                 if (part === '(') {
                     parenLevel++;
                 } else if (part === ')') {
                     parenLevel--;
-                    if (parenLevel < 0 ) {
-                        parenLevel = 0;
-                        // throw away unmatched paren
-                        i++;
-                        continue;
-                    }
                 }
+                child.push(part);
+                i++;
             } else {
                 break;
             }
-            child.push(part);
-            i++;
         }
 
         while (parenLevel > 0) {
             child.push(')');
             parenLevel--;
+        }
+
+        while (parenLevel < 0 ) {
+            child.splice(0,0,'(');
+            parenLevel++;
         }
 
         return pushParseString(child.join(' '));

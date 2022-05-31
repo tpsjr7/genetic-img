@@ -672,9 +672,9 @@ function float_input( inInterpreter ) {
   inInterpreter.intStack.push( inInterpreter[ 'inputValue' ] );
 }
 
-export function pushInterpreter(canvasElem) {
+export function pushInterpreter(canvasWrapper) {
 
-  if (!canvasElem) {
+  if (!canvasWrapper) {
     throw new Error("Missing canvas");
   }
   this.executionCounts = {};
@@ -960,48 +960,42 @@ export function pushInterpreter(canvasElem) {
   this[ 'CODE.RAND' ] = new pushInstruction( this.codeStack, pushInstructionRandomCode );
 
   this[ 'TRUE' ] = new pushDefine( this.boolStack, true );
-  this[ 'FALSE' ] = new pushDefine( this.boolStack, false );
+  this['FALSE'] = new pushDefine(this.boolStack, false);
 
   // this[ 'INPUT' ] = float_input;
 
   /// Canvas stuff
-  if (canvasElem) {
-
-    let canvas = new CanvasWrapper(canvasElem);
-
-    this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack) {
-      if (inStack.length >= 2) {
-        let a = inStack.pop();
-        let b = inStack.pop();
-        if (canvas.moveTo(a, b)) {
-          inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
-        } else {
-          inStack.push(b);
-          inStack.push(a);
-        }
+  this['FLOAT.CV_MOVE_TO'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
+    if (inStack.length >= 2) {
+      let a = inStack.pop();
+      let b = inStack.pop();
+      if (canvasWrapper.moveTo(a, b)) {
+        inInterpreter.executionCounts['FLOAT.CV_MOVE_TO']++;
+      } else {
+        inStack.push(b);
+        inStack.push(a);
       }
-    });
+    }
+  });
 
-    this['FLOAT.CV_FORWARD'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
-      if (inStack.length >= 1) {
-        let val = inStack.pop();
-        if (canvas.forward(val)){
-          inInterpreter.stats.drawDistance += canvas.lastDrawDistance;
-          inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
-        } else {
-          inStack.push(val);
-        }
+  this['FLOAT.CV_FORWARD'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
+    if (inStack.length >= 1) {
+      let val = inStack.pop();
+      if (canvasWrapper.forward(val)) {
+        inInterpreter.stats.drawDistance += canvasWrapper.lastDrawDistance;
+        inInterpreter.executionCounts['FLOAT.CV_FORWARD']++;
+      } else {
+        inStack.push(val);
       }
-    });
+    }
+  });
 
-    this['FLOAT.CV_TURN'] = new pushInstruction(this.floatStack, function(inInterpreter, inStack){
-      if (inStack.length >= 1) {
-        inInterpreter.executionCounts['FLOAT.CV_TURN']++;
-        canvas.turn(inStack.pop());
-      }
-    });
-
-  }
+  this['FLOAT.CV_TURN'] = new pushInstruction(this.floatStack, function (inInterpreter, inStack) {
+    if (inStack.length >= 1) {
+      inInterpreter.executionCounts['FLOAT.CV_TURN']++;
+      canvasWrapper.turn(inStack.pop());
+    }
+  });
 
   this.randInstructions = getPushInstructionSet(this);
 
@@ -1126,6 +1120,7 @@ export function getPushInstructionSet(inInterpreter) {
 export function pushParseString( inString ) {
   // insert spaces around all parens so that our split works
 
+  let origString = inString;
   var parens = /[\(\)]/;
 
   if( !parens.test( inString ) ) {
@@ -1145,6 +1140,10 @@ export function pushParseString( inString ) {
   var spaces = /\ +/;
   var decimal = /\./;
   var num = 0;
+  function error(mess) {
+    console.log("Error running: " + origString);
+    throw new Error(mess);
+  }
 
   for( var i = 0; i < tokens.length; i++ ) {
     if( !spaces.test( tokens[ i ] ) ) {
@@ -1156,7 +1155,7 @@ export function pushParseString( inString ) {
 
       } else if( tokens[ i ] == ')' ) {    // Pop
         if( listStack.length < 1 ) {
-          throw new Error( "Unmatched ')' in Push program (token #" + i + ")");
+          error( "Unmatched ')' in Push program (token #" + i + ")");
         }
 
         var newList = listStack.pop();
@@ -1171,7 +1170,7 @@ export function pushParseString( inString ) {
       } else if ( ( num = parseFloat( tokens[ i ] ) ) == tokens[ i ] ) {  // Number literal
         if( currentList == null ) {
           // alert( 'Push parse error near token "' + tokens[ i ] + '"' );
-          throw new Error('Push parse error near token "' + tokens[ i ] + '"');
+          error('Push parse error near token "' + tokens[ i ] + '"');
         }
 
         if( decimal.test( tokens[ i ] ) )
@@ -1180,7 +1179,7 @@ export function pushParseString( inString ) {
           currentList.push( new pushInt( num ) );
       } else if( tokens[ i ] != '' ) {    // Instruction token
         if( currentList == null ) {
-          throw new Error('Push parse error near token "' + tokens[ i ] + '"');
+          error('Push parse error near token "' + tokens[ i ] + '"');
         }
 
         currentList.push( tokens[ i ] );
@@ -1189,7 +1188,7 @@ export function pushParseString( inString ) {
   }
 
   if( listStack.length > 0 ) {
-    throw new Error("Unmatched '(' in Push program");
+    error("Unmatched '(' in Push program");
   }
 
   return lastList;
@@ -1203,14 +1202,14 @@ window.pushParseString = pushParseString;
  * @return The string state of the interpreter
  */
 
-export function pushRunString( inProgram, canvasElem ) {
-  if (!canvasElem) {
-    canvasElem = new MockCanvasElement();
+export function pushRunString( inProgram, canvasWrapper ) {
+  if (!canvasWrapper) {
+    canvasWrapper = new CanvasWrapper(new MockCanvasElement());
   }
 
   var program = pushParseString( inProgram );
 
-  var interpreter = new pushInterpreter(canvasElem);
+  var interpreter = new pushInterpreter(canvasWrapper);
 
   var info = pushRunProgram( interpreter, program )
 

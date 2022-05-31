@@ -4,6 +4,7 @@ import {EvolutionManager} from "../main/evolution-manager.js";
 import {MockCanvasElement, MockWindow} from "./mocks.js";
 import {pushInterpreter, pushParseString} from "../main/push.js";
 import {RandomCodeGenerator} from "../main/random-code.js";
+import {CanvasWrapper} from "../main/canvas-wrapper.js";
 
 addTests({
     testGetTopScoring() {
@@ -57,6 +58,19 @@ addTests({
         i1 = pushParseString('( 1 1 1 )');
         i2 = pushParseString('( 2 ( 2 2 ) )');
         assertEquals('( 2 ( 1 ) )', em.crossIndividuals(i1, i2).toString());
+
+
+        em.random = makeRandomSeq([0, 1, 1, 0, 1, 1, 1, 1]); // 0 is swap, 1 is keep the same
+        i1 = pushParseString('( ( 1 1 ) 1 )');
+        i2 = pushParseString('( 0 0 0 0 0 0 0 0 )');
+        assertEquals('( ( 0 0 1 ) 1 )', em.crossIndividuals(i1, i2).toString());
+
+        em.random = makeRandomSeq([], {rest: 1});
+        assertEquals('( ( 1 ) ( 1 ) )', em.crossIndividuals(
+            '( 1 ) ( 1 )',
+            '( )'
+        ));
+
     },
     testCreateNextGeneration() {
         let mockWindow = new MockWindow();
@@ -69,13 +83,17 @@ addTests({
 
         em.scorePopulation(()=>{return 0.95;});
 
-        em.random = makeRandomSeq([
-            0, 0, .1, 0, // pick 0th and 1st individuals
-            1, 1, 1,// don't switch with cross
-            0, // switch to 1st individual ( 1 1 1 ...
-            1, // don't switch
-        ], {rest: 0.99});
-        em.createNextGeneration();
+            // em.random = makeRandomSeq([
+        //     0, 0, .1, 0, // pick 0th and 1st individuals
+        //     1, 1, 1,// don't switch with cross
+        //     0, // switch to 1st individual ( 1 1 1 ...
+        //     1, // don't switch
+        // ],
+        //     {rest: 0.99}
+        // );
+        for (let i = 0 ; i < 50 ; i++) {
+            em.createNextGeneration();
+        }
 
         assertEquals(1, em.elitesPopulation.length);
         assertEquals(10, em.population.length);
@@ -85,7 +103,7 @@ addTests({
         let enm = new EnvironmentManager(new MockWindow(), 1);
         let evm = new EvolutionManager(enm, 1);
 
-        let pi = new pushInterpreter(new MockCanvasElement());
+        let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
 
         pi.randInstructions = [
             'INTEGER.+',

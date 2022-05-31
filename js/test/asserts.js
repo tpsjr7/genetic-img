@@ -110,6 +110,7 @@ export function addTests(someTests) {
   }
 }
 export function runTests() {
+  let html = '';
   try {
     let count = 0;
     let keys = Object.keys(tests);
@@ -119,14 +120,19 @@ export function runTests() {
     if (focused.length > 0) {
       keysToRun = focused;
     }
+
     for (let test of keysToRun) {
       count++;
       console.log('Running ' + test);
+      html += `Running ${test} </br>`;
+      document.body.innerHTML = html;
       tests[test]();
     }
-    document.body.innerHTML = `<h1 style="color: green">${count} Pass</h1>`;
+    html += `<h1 style="color: green">${count} Pass</h1>`
+    document.body.innerHTML = html;
   } catch (e) {
     console.warn(e);
-    document.body.innerHTML = '<h1 style="color: red">Fail</h1>';
+    html += '<h1 style="color: red">Fail</h1>';
+    document.body.innerHTML = html;
   }
 }
