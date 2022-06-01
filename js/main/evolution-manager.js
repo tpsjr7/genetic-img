@@ -157,17 +157,62 @@ export class EvolutionManager {
         }
     }
 
+    _rebalance(childTokenizedArray) {
+
+        console.log("balancing: " + childTokenizedArray.toString());
+
+        // rebalance parenthesis
+        let needsExtraParen = false;
+        let i = 0;
+        let parenLevel = 0;
+
+        while (true) {
+            if (i < childTokenizedArray.length) {
+                let part = childTokenizedArray[i];
+                if (part === '(') {
+                    parenLevel++;
+                } else if (part === ')') {
+                    parenLevel--;
+                }
+
+                if (parenLevel === 0) {
+                    if ( i + 1  < childTokenizedArray.length) {
+                        needsExtraParen = true;
+                    }
+                }
+                i++;
+            } else {
+                break;
+            }
+        }
+
+        while (parenLevel > 0) {
+            childTokenizedArray.push(')');
+            parenLevel--;
+        }
+
+        while (parenLevel < 0 ) {
+            childTokenizedArray.splice(0,0,'(');
+            parenLevel++;
+        }
+
+        if (needsExtraParen) {
+            childTokenizedArray.splice(0, 0, '(');
+            childTokenizedArray.push(')');
+        }
+        console.log("after balancing: " + childTokenizedArray.toString());
+        return childTokenizedArray.toString();
+    }
+
     crossIndividuals(first, second) {
         let p1 = first.toString().split(' ');
         let p2 = second.toString().split(' ');
 
-        let child = [];
+        let childTokenizedArray = [];
         let chosen = p1;
 
+        // cross it first
         let i = 0;
-
-        let parenLevel = 0;
-
         while (true) {
             let rand = this.random();
             if (rand < this.crossProbability) {
@@ -179,30 +224,16 @@ export class EvolutionManager {
                 }
             }
             if (i < chosen.length) {
-                let part = chosen[i];
-                if (part === '(') {
-                    parenLevel++;
-                } else if (part === ')') {
-                    parenLevel--;
-                }
-                child.push(part);
-                i++;
+                childTokenizedArray.push(chosen[i]);
             } else {
                 break;
             }
+            i++;
         }
 
-        while (parenLevel > 0) {
-            child.push(')');
-            parenLevel--;
-        }
+        let childAsString = this._rebalance(childTokenizedArray);
 
-        while (parenLevel < 0 ) {
-            child.splice(0,0,'(');
-            parenLevel++;
-        }
-
-        return pushParseString(child.join(' '));
+        return pushParseString(childAsString);
     }
 
 

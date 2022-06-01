@@ -36,8 +36,20 @@ addTests({
        assertEquals(2.2, best[0].score);
        assertEquals(1.1, best[1].score);
    },
+    focus_testRebalance() {
+        let mockWindow = new MockWindow();
+        let environmentManager = new EnvironmentManager(mockWindow, 2);
+        let em = new EvolutionManager(environmentManager, 2);
+        let input = '( 0 1 ( 2 ) ) ) 3 ( 4 ( 5 6 7';
+        let rebalanced = em._rebalance(input.split(' '));
+        assertEquals(
+            '( ( ( 0 1 ( 2 ) ) ) 3 ( 4 ( 5 6 7 ) ) )',
+            rebalanced
+        );
+        let parsed = pushParseString(rebalanced);
 
-    testCrossIndividuals() {
+    },
+    focus_testCrossIndividuals() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 2);
         let em = new EvolutionManager(environmentManager, 2);
@@ -60,19 +72,26 @@ addTests({
         assertEquals('( 2 ( 1 ) )', em.crossIndividuals(i1, i2).toString());
 
 
+        // em.random = makeRandomSeq([], {rest: 1});
+        // assertEquals('( ( 1 ) ( 1 ) )', em.crossIndividuals(
+        //     '( 0 0 1 ) 1 )',
+        //     '( )'
+        // ));
+
+
         em.random = makeRandomSeq([0, 1, 1, 0, 1, 1, 1, 1]); // 0 is swap, 1 is keep the same
         i1 = pushParseString('( ( 1 1 ) 1 )');
         i2 = pushParseString('( 0 0 0 0 0 0 0 0 )');
-        assertEquals('( ( 0 0 1 ) 1 )', em.crossIndividuals(i1, i2).toString());
+        assertEquals('( ( ( 0 0 1 ) 1 ) )', em.crossIndividuals(i1, i2).toString());
 
         em.random = makeRandomSeq([], {rest: 1});
         assertEquals('( ( 1 ) ( 1 ) )', em.crossIndividuals(
             '( 1 ) ( 1 )',
             '( )'
-        ));
+        ).toString());
 
     },
-    testCreateNextGeneration() {
+    focus_testCreateNextGeneration() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 10);
         let em = new EvolutionManager(environmentManager, 10);
