@@ -121,6 +121,8 @@ export function runTests() {
       keysToRun = focused;
     }
 
+    keysToRun = keysToRun.filter((it => !it.startsWith("skip_")));
+
     for (let test of keysToRun) {
       count++;
       console.log('Running ' + test);

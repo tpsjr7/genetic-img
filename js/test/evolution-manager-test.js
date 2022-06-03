@@ -40,13 +40,79 @@ addTests({
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 2);
         let em = new EvolutionManager(environmentManager, 2);
-        let input = '( 0 1 ( 2 ) ) ) 3 ( 4 ( 5 6 7';
-        let rebalanced = em._rebalance(input.split(' '));
-        assertEquals(
-            '( ( ( 0 1 ( 2 ) ) ) 3 ( 4 ( 5 6 7 ) ) )',
-            rebalanced
-        );
-        let parsed = pushParseString(rebalanced);
+
+        let testBalanace = (input, expected) => {
+            let rebalanced = em._rebalance(input.trim().split(' '));
+            assertEquals(expected, rebalanced);
+            pushParseString(rebalanced);
+        }
+
+        /**
+         )
+         (
+         ()
+         ((
+         ())
+         ()(
+         (()
+         (((
+         ()))
+         ())(
+         ()()
+         ()((
+         (())
+         (()(
+         ((()
+         ((((
+
+
+
+         */
+        // testBalanace('', '( )'   );
+        testBalanace('1', '( 1 )');
+        testBalanace('( )', '( )');
+        testBalanace('( ( 1 ) ', '( ( 1 ) )');
+
+        testBalanace('( 1 ) 1', '( ( 1 ) 1 )');
+        // testBalanace('( ) 1', '( 1 )');
+
+        testBalanace('( ) 1', '( ( ) 1 )');
+        testBalanace('( 1', '( 1 )');
+        testBalanace(')', '( )');
+
+        testBalanace('(', '( )');
+        testBalanace('1 )', '( 1 )');
+
+        testBalanace('1 ) )', '( ( 1 ) )');
+
+        // ---
+
+        testBalanace('1 1 )', '( 1 1 )');
+        testBalanace('1 1 ) )', '( ( 1 1 ) )');
+        testBalanace('( ( 1 1 ) )', '( ( 1 1 ) )');
+        testBalanace('( 1 ( 1', '( 1 ( 1 ) )');
+
+        testBalanace('( 1 ) ) 0 ( )', '( ( ( 1 ) ) 0 )');
+
+        testBalanace('( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
+
+        // testBalanace('( ) ( )', '( )');
+
+        testBalanace('( (', '( ( ) )');
+        // testBalanace('( ) )', '( )');
+
+        testBalanace('( ) )', '( ( ) )');
+
+        // testBalanace('( 1 ) ( 1 ) ( )', '( ( 1 ) ( 1 ) )');
+        testBalanace('( 1 ) ( 1 ) ( )', '( ( 1 ) ( 1 ) ( ) )');
+
+        testBalanace('( ( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
+
+        // testBalanace(') (', '( )');
+        testBalanace(') (', '( ( ) ( ) )');
+
+        testBalanace('( ) ( )', '( ( ) ( ) )');
+        // testBalanace('( (', '( )');
 
     },
     focus_testCrossIndividuals() {
@@ -82,7 +148,7 @@ addTests({
         em.random = makeRandomSeq([0, 1, 1, 0, 1, 1, 1, 1]); // 0 is swap, 1 is keep the same
         i1 = pushParseString('( ( 1 1 ) 1 )');
         i2 = pushParseString('( 0 0 0 0 0 0 0 0 )');
-        assertEquals('( ( ( 0 0 1 ) 1 ) )', em.crossIndividuals(i1, i2).toString());
+        assertEquals('( ( 0 0 1 ) 1 )', em.crossIndividuals(i1, i2).toString());
 
         em.random = makeRandomSeq([], {rest: 1});
         assertEquals('( ( 1 ) ( 1 ) )', em.crossIndividuals(
