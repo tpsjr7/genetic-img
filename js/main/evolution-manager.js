@@ -158,7 +158,6 @@ export class EvolutionManager {
     }
 
     _rebalance(childTokenizedArray) {
-        console.log("balancing: ", childTokenizedArray.join(' '));
         let p = Number.NaN;
         let i = 0;
         let count = 0;
@@ -203,7 +202,6 @@ export class EvolutionManager {
         if (childTokenizedArray.length === 0){
             childTokenizedArray.push('(', ')');
         }
-        console.log("after balancing: ", childTokenizedArray.join(' '));
         return childTokenizedArray.join(' ');
     }
 

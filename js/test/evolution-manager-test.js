@@ -36,7 +36,7 @@ addTests({
        assertEquals(2.2, best[0].score);
        assertEquals(1.1, best[1].score);
    },
-    focus_testRebalance() {
+    testRebalance() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 2);
         let em = new EvolutionManager(environmentManager, 2);
@@ -83,7 +83,7 @@ addTests({
 
         testBalanace('( ) ( )', '( )');
     },
-    focus_testCrossIndividuals() {
+    testCrossIndividuals() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 2);
         let em = new EvolutionManager(environmentManager, 2);
@@ -125,7 +125,7 @@ addTests({
         ).toString());
 
     },
-    focus_testCreateNextGeneration() {
+    testCreateNextGeneration() {
         let mockWindow = new MockWindow();
         let environmentManager = new EnvironmentManager(mockWindow, 10);
         let em = new EvolutionManager(environmentManager, 10);
@@ -144,7 +144,7 @@ addTests({
         // ],
         //     {rest: 0.99}
         // );
-        for (let i = 0 ; i < 50 ; i++) {
+        for (let i = 0 ; i < 500 ; i++) {
             em.createNextGeneration();
         }
 
