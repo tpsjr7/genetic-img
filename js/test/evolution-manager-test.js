@@ -47,36 +47,15 @@ addTests({
             pushParseString(rebalanced);
         }
 
-        /**
-         )
-         (
-         ()
-         ((
-         ())
-         ()(
-         (()
-         (((
-         ()))
-         ())(
-         ()()
-         ()((
-         (())
-         (()(
-         ((()
-         ((((
-
-
-
-         */
         // testBalanace('', '( )'   );
         testBalanace('1', '( 1 )');
         testBalanace('( )', '( )');
         testBalanace('( ( 1 ) ', '( ( 1 ) )');
 
         testBalanace('( 1 ) 1', '( ( 1 ) 1 )');
-        // testBalanace('( ) 1', '( 1 )');
+        testBalanace('( ) 1', '( 1 )');
 
-        testBalanace('( ) 1', '( ( ) 1 )');
+        testBalanace('( ) 1', '( 1 )');
         testBalanace('( 1', '( 1 )');
         testBalanace(')', '( )');
 
@@ -85,35 +64,24 @@ addTests({
 
         testBalanace('1 ) )', '( ( 1 ) )');
 
-
         testBalanace('1 1 )', '( 1 1 )');
         testBalanace('1 1 ) )', '( ( 1 1 ) )');
         testBalanace('( ( 1 1 ) )', '( ( 1 1 ) )');
         testBalanace('( 1 ( 1', '( 1 ( 1 ) )');
 
-        // ---
+        testBalanace('( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
+        testBalanace('( ( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
+        testBalanace('( (', '( ( ) )');
+
+        testBalanace(') (', '( )');
+
         testBalanace('( 1 ) ) 0 ( )', '( ( ( 1 ) ) 0 )');
 
-        testBalanace('( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
+        testBalanace('( ) )', '( )');
 
-        // testBalanace('( ) ( )', '( )');
+        testBalanace('( 1 ) ( 1 ) ( )', '( ( 1 ) ( 1 ) )');
 
-        testBalanace('( (', '( ( ) )');
-        // testBalanace('( ) )', '( )');
-
-        testBalanace('( ) )', '( ( ) )');
-
-        // testBalanace('( 1 ) ( 1 ) ( )', '( ( 1 ) ( 1 ) )');
-        testBalanace('( 1 ) ( 1 ) ( )', '( ( 1 ) ( 1 ) ( ) )');
-
-        testBalanace('( ( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');
-
-        // testBalanace(') (', '( )');
-        testBalanace(') (', '( ( ) ( ) )');
-
-        testBalanace('( ) ( )', '( ( ) ( ) )');
-        // testBalanace('( (', '( )');
-
+        testBalanace('( ) ( )', '( )');
     },
     focus_testCrossIndividuals() {
         let mockWindow = new MockWindow();

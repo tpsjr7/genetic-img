@@ -182,6 +182,11 @@ export class EvolutionManager {
                     continue;
                 } else if (token === ')') {
                     p--;
+                    if (childTokenizedArray[i-1] === '('){
+                        childTokenizedArray.splice(i - 1, 2)
+                        i--;
+                        i--;
+                    }
                 } else if (token === '(') {
                     p++;
                 }
@@ -194,6 +199,9 @@ export class EvolutionManager {
         while (p > 0) {
             childTokenizedArray.push(')');
             p--;
+        }
+        if (childTokenizedArray.length === 0){
+            childTokenizedArray.push('(', ')');
         }
         console.log("after balancing: ", childTokenizedArray.join(' '));
         return childTokenizedArray.join(' ');
