@@ -85,13 +85,13 @@ addTests({
 
         testBalanace('1 ) )', '( ( 1 ) )');
 
-        // ---
 
         testBalanace('1 1 )', '( 1 1 )');
         testBalanace('1 1 ) )', '( ( 1 1 ) )');
         testBalanace('( ( 1 1 ) )', '( ( 1 1 ) )');
         testBalanace('( 1 ( 1', '( 1 ( 1 ) )');
 
+        // ---
         testBalanace('( 1 ) ) 0 ( )', '( ( ( 1 ) ) 0 )');
 
         testBalanace('( 1 ) ( 1 )', '( ( 1 ) ( 1 ) )');

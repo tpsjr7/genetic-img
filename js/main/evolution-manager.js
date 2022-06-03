@@ -179,6 +179,7 @@ export class EvolutionManager {
                     childTokenizedArray.splice(0,0,'(');
                     p++;
                     i++;
+                    continue;
                 } else if (token === ')') {
                     p--;
                 } else if (token === '(') {
