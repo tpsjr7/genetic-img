@@ -15,9 +15,10 @@ export class EvolutionManager {
     maxScoreObj;
 
     elitesFraction = .1;
-    mutationChance = .05;
+    mutationChance = .03;
     maxMutateAddPoints = 5;
     crossProbability = 0.15;
+    mateBoost = 0.03;
 
     constructor(environmentManager, popSize) {
         if (!environmentManager) throw new Error("missing window");
@@ -117,14 +118,24 @@ export class EvolutionManager {
         let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
         let rcg = new RandomCodeGenerator(pi);
 
+        let count = 0;
+        let check = () => {
+            count ++;
+            if (count > this.conf.popSize * 100) {
+                throw new Error("too many loops during selection");
+            }
+        }
         while (newPop.length < this.conf.popSize) {
-            do {
-                i1 = Math.floor(this.random() * nPop);
-            } while (this.random()  > this.scores[i1].normalizedScore);
 
             do {
+                check();
+                i1 = Math.floor(this.random() * nPop);
+            } while (this.random()  > ( this.scores[i1].normalizedScore + this.mateBoost) );
+
+            do {
+                check();
                 i2 = Math.floor(this.random() * nPop);
-            } while (i1 === i2 || this.random()  > this.scores[i2].normalizedScore);
+            } while (i1 === i2 || this.random()  > ( this.scores[i2].normalizedScore + this.mateBoost) );
 
             let child = this.crossIndividuals(
                 this.population[this.scores[i1].i],
@@ -134,7 +145,8 @@ export class EvolutionManager {
             this.mutate(child, rcg);
             newPop.push(child);
         }
-        this.population = newPop;
+        this.population = newPop
+        console.log("loops: ", count);
     }
 
     mutate(program, rcg) {

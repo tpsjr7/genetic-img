@@ -21,9 +21,10 @@ function main() {
         em.positionCanvases()
     });
 
-    runGeneration();
+    // runGeneration();
 
 }
 
-window.runGeneration = runGeneration;
 main();
+window.runGeneration = runGeneration;
+window.evolutionManager = evolutionManager;
