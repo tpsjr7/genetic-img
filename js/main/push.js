@@ -612,6 +612,10 @@ function pushInstructionYank( inInterpreter, inStack ) {
 
   if( inInterpreter.intStack.length >= intReq && inStack.length > 0 ) {
     var index = inInterpreter.intStack.pop();
+    if (index < 0) {
+      // do nothing if integer is negative;
+      return;
+    }
 
     if( index < inStack.length )
       inStack.push( inStack.splice( inStack.length - ( index + 1 ), 1 )[ 0 ] )
@@ -625,6 +629,10 @@ function pushInstructionYankDup( inInterpreter, inStack ) {
 
   if( inInterpreter.intStack.length >= intReq && inStack.length > 0 ) {
     var index = inInterpreter.intStack.pop();
+    if (index < 0) {
+      // do nothing if integer is negative;
+      return;
+    }
 
     if( index < inStack.length )
       inStack.push( inStack[ inStack.length - ( index + 1 ) ] )
@@ -638,7 +646,10 @@ function pushInstructionShove( inInterpreter, inStack ) {
 
   if( inInterpreter.intStack.length >= intReq && inStack.length > 0 ) {
     var index = inInterpreter.intStack.pop();
-
+    if (index < 0) {
+      // do nothing if integer is negative;
+      return;
+    }
     if( index < inStack.length ) {
       var replace = inStack.pop();
       inStack.splice( inStack.length - index, 0, replace );

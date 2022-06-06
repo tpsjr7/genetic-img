@@ -405,6 +405,12 @@ addTests({
     let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
     let ret = pushRunProgram(pi, program);
     assertEquals(1,  pi._error);
+  },
+  testEqualsBug() {
+    let bad ='( ( ( ( ( ( ( -2 EXEC.STACKDEPTH ( FLOAT.FROMINTEGER EXEC.STACKDEPTH ) FLOAT.FROMINTEGER EXEC.STACKDEPTH EXEC.STACKDEPTH FLOAT.FROMINTEGER FLOAT.CV_FORWARD EXEC.STACKDEPTH FLOAT.FROMINTEGER ) FLOAT.FROMINTEGER ) CODE.YANK ) ) ) ) CODE.DO NAME.= CODE.DO )';
+    let program = pushParseString(bad);
+    let pi = new pushInterpreter(new CanvasWrapper(new MockCanvasElement()));
+    let ret = pushRunProgram(pi, program);
   }
 });
 
