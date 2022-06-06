@@ -203,6 +203,39 @@ addTests({
         evm.mutate(p1, rcg);
         assertEquals('( 1 INTEGER.- INTEGER.- )', p1.toString());
 
+    },
+    testTrimFat() {
+        let mockWindow = new MockWindow();
+        let environmentManager = new EnvironmentManager(mockWindow, 1);
+        let em = new EvolutionManager(environmentManager, 1);
+
+
+        let testTrim = (expected, input) => {
+            let program = pushParseString(input);
+            let p2 = em.trimFat(program);
+            assertEquals(expected, p2.toString());
+        };
+        testTrim('( 1 2 ( 3 ) ( ) )', '( ( 1 2 ( 3 ) ( ) ) )');
+        testTrim('( )', '( )');
+        testTrim('( 1 )', '( 1 )');
+        testTrim('( 1 )', '( ( 1 ) )');
+        testTrim('( 1 ( 2 ) )', '( ( 1 ( 2 ) ) )');
+
+        testTrim('( 1 ( 2 ) )', '( ( 1 ( 2 ) ) )');
+
+        testTrim('( ( 4 ) 5 )', '( ( 4 ) 5 )');
+        testTrim('( ( ( ) ) ( ) )', ' ( ( ( ( ) ) ( ) ) )');
+
+        testTrim('( ( ) 3 )', '( ( ( ) 3 ) )');
+        let testTrimCount = (expected, input) => {
+            let program = pushParseString(input);
+            let p2 = em.trimFat(program);
+            assertEquals(expected, p2.count);
+        };
+        testTrimCount(4, '( ( 1 ( 2 ) ) )');
+        testTrimCount(3, '( ( ( ) 3 ) )');
+
+
     }
 
 

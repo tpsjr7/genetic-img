@@ -125,6 +125,8 @@ export class EvolutionManager {
                 throw new Error("too many loops during selection");
             }
         }
+
+        // cross then mutate
         while (newPop.length < this.conf.popSize) {
 
             do {
@@ -247,6 +249,13 @@ export class EvolutionManager {
         let childAsString = this._rebalance(childTokenizedArray);
 
         return pushParseString(childAsString);
+    }
+
+    trimFat(program) {
+        while (program.length ===  1 && typeof program[0].length !== 'undefined') {
+            program = program[0];
+        }
+        return program;
     }
 
 
